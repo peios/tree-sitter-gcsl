@@ -1,0 +1,71 @@
+import a.b as c
+# <- keyword.import
+#      ^ module
+#          ^ keyword.operator
+#             ^ module
+import x, y from m
+#      ^ variable
+#           ^ keyword.import
+#                ^ module
+type T = Int
+# <- keyword
+#    ^ type.definition
+#        ^ type.builtin
+fn f(n: Int): Int { n }
+# <- keyword.function
+#  ^ function
+#    ^ variable.parameter
+#           ^ keyword.modifier
+def a.g() ->> Int { lazy x }
+# <- keyword.function
+#   ^ module
+#     ^ function
+#         ^ keyword.modifier
+#                   ^ keyword.modifier
+let mut v = await f(1)
+# <- keyword.modifier
+#   ^ keyword.modifier
+#       ^ variable
+#           ^ keyword.modifier
+#                 ^ function.call
+x = if a and not b { 1 } else { 2 }
+# <- variable.member
+#   ^ keyword.conditional
+#        ^ keyword.operator
+#            ^ keyword.operator
+#                        ^ keyword.conditional
+y = for i in xs { break i }
+#   ^ keyword.repeat
+#       ^ variable
+#         ^ keyword.operator
+#            ^ variable
+#                 ^ keyword.return
+#                       ^ variable
+z = do { continue } for c
+#   ^ keyword.repeat
+#        ^ keyword.return
+#                   ^ keyword.repeat
+fn h(): Int { return 1 }
+#             ^ keyword.return
+w = q is Int or q as Int
+#     ^ keyword.operator
+#        ^ type.builtin
+#            ^ keyword.operator
+#                 ^ keyword.operator
+defmeta package x.y = {}
+# <- keyword.function
+#       ^ keyword.function
+#               ^ module
+#                 ^ module
+#                   ^ operator
+def package x.y(v) { }
+# <- keyword.function
+#   ^ keyword.function
+#           ^ module
+#               ^ variable.parameter
+type F = fn(): Int META-> X
+#        ^ keyword.function
+#            ^ keyword.modifier
+#                  ^ keyword
+#                      ^ keyword.modifier
+#                         ^ type

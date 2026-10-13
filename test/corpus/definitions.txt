@@ -1,0 +1,274 @@
+================================================================================
+A def-type and a definition
+================================================================================
+
+#[def_type]
+def package(name: String, func: fn(v: Version): PackageDef META-> PackageMeta, version: String) -> { pkg: Package, manifest: String } {
+    fileroot.helper()
+}
+
+def package dev.peios.testpkg(v) {
+    arch = "x86_64"
+    version = v.version
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (attribute)
+  (public_function
+    (dotted_name
+      (identifier))
+    (parameters
+      (parameter
+        (identifier)
+        (type_identifier))
+      (parameter
+        (identifier)
+        (function_type
+          (parameter_types
+            (parameter_type
+              (identifier)
+              (type_identifier)))
+          (effect)
+          (type_identifier)
+          (meta_type
+            (effect)
+            (type_identifier))))
+      (parameter
+        (identifier)
+        (type_identifier)))
+    (effect)
+    (record_type
+      (field_type
+        (identifier)
+        (type_identifier))
+      (field_type
+        (identifier)
+        (type_identifier)))
+    (block
+      (call
+        (field_access
+          (identifier)
+          (identifier))
+        (arguments))))
+  (definition
+    (def_type
+      (identifier))
+    (definition_path
+      (segment
+        (identifier))
+      (segment
+        (identifier))
+      (segment
+        (identifier)))
+    (parameters
+      (parameter
+        (identifier)))
+    (block
+      (field
+        (path
+          (identifier))
+        (string
+          (string_content)))
+      (field
+        (path
+          (identifier))
+        (field_access
+          (identifier)
+          (identifier))))))
+
+================================================================================
+Definition paths with + and digits
+================================================================================
+
+def package org.gnu.gmp-c++(v) { }
+def package org.gnu.gcc-libstdc++-devel(v, x,) { }
+def package org.golang.go-stage0-1.24(v) { }
+def package org.rust-lang.rust-1.83.0rc1(v) { }
+def package x.24rc1.1_0.1e5.1.5e3(v) { }
+def a.b c.d(v) { }
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (definition
+    (def_type
+      (identifier))
+    (definition_path
+      (segment
+        (identifier))
+      (segment
+        (identifier))
+      (segment
+        (identifier)))
+    (parameters
+      (parameter
+        (identifier)))
+    (block))
+  (definition
+    (def_type
+      (identifier))
+    (definition_path
+      (segment
+        (identifier))
+      (segment
+        (identifier))
+      (segment
+        (identifier)))
+    (parameters
+      (parameter
+        (identifier))
+      (parameter
+        (identifier)))
+    (block))
+  (definition
+    (def_type
+      (identifier))
+    (definition_path
+      (segment
+        (identifier))
+      (segment
+        (identifier))
+      (segment
+        (identifier))
+      (segment))
+    (parameters
+      (parameter
+        (identifier)))
+    (block))
+  (definition
+    (def_type
+      (identifier))
+    (definition_path
+      (segment
+        (identifier))
+      (segment
+        (identifier))
+      (segment
+        (identifier))
+      (segment)
+      (segment))
+    (parameters
+      (parameter
+        (identifier)))
+    (block))
+  (definition
+    (def_type
+      (identifier))
+    (definition_path
+      (segment
+        (identifier))
+      (segment)
+      (segment)
+      (segment)
+      (segment)
+      (segment))
+    (parameters
+      (parameter
+        (identifier)))
+    (block))
+  (definition
+    (def_type
+      (identifier)
+      (identifier))
+    (definition_path
+      (segment
+        (identifier))
+      (segment
+        (identifier)))
+    (parameters
+      (parameter
+        (identifier)))
+    (block)))
+
+================================================================================
+Metas
+================================================================================
+
+defmeta package dev.peios.testpkg {
+    versions = [
+        { version = "0.1.0" },
+    ]
+}
+defmeta package org.gnu.gmp-c++ = lazy { versions = [] }
+defmeta a.b c.1 = {}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (meta
+    (def_type
+      (identifier))
+    (definition_path
+      (segment
+        (identifier))
+      (segment
+        (identifier))
+      (segment
+        (identifier)))
+    (block
+      (field
+        (path
+          (identifier))
+        (list
+          (block
+            (field
+              (path
+                (identifier))
+              (string
+                (string_content))))))))
+  (meta
+    (def_type
+      (identifier))
+    (definition_path
+      (segment
+        (identifier))
+      (segment
+        (identifier))
+      (segment
+        (identifier)))
+    (lazy
+      (block
+        (field
+          (path
+            (identifier))
+          (list)))))
+  (meta
+    (def_type
+      (identifier)
+      (identifier))
+    (definition_path
+      (segment
+        (identifier))
+      (segment))
+    (block)))
+
+================================================================================
+defmeta as a name
+================================================================================
+
+defmeta p { 1 }
+defmeta a.b { 1 }
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (call
+    (reference
+      (identifier)
+      (definition_path
+        (segment
+          (identifier))))
+    (block
+      (integer)))
+  (call
+    (reference
+      (identifier)
+      (definition_path
+        (segment
+          (identifier))
+        (segment
+          (identifier))))
+    (block
+      (integer))))

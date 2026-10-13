@@ -1,0 +1,196 @@
+================================================================================
+Plain strings and escapes
+================================================================================
+
+a = ""
+b = "plain"
+c = "tab\tquote\"slash\\unicode\u{1F600}"
+d = "braces {{literal}} here"
+e = "# not a comment"
+f = "line \
+     continued"
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (field
+    (path
+      (identifier))
+    (string))
+  (field
+    (path
+      (identifier))
+    (string
+      (string_content)))
+  (field
+    (path
+      (identifier))
+    (string
+      (string_content)
+      (escape_sequence)
+      (string_content)
+      (escape_sequence)
+      (string_content)
+      (escape_sequence)
+      (string_content)
+      (escape_sequence)))
+  (field
+    (path
+      (identifier))
+    (string
+      (string_content)
+      (escape_sequence)
+      (string_content)
+      (escape_sequence)
+      (string_content)))
+  (field
+    (path
+      (identifier))
+    (string
+      (string_content)))
+  (field
+    (path
+      (identifier))
+    (string
+      (string_content)
+      (escape_sequence)
+      (string_content))))
+
+================================================================================
+Interpolation
+================================================================================
+
+a = "{name} has {count} item{plural}"
+b = "{ {a = 1}.a } and {f("nested {x}")}"
+c = "{ {
+  let y = 1
+  y
+} }"
+d = "{
+  x
+}"
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (field
+    (path
+      (identifier))
+    (string
+      (interpolation
+        (identifier))
+      (string_content)
+      (interpolation
+        (identifier))
+      (string_content)
+      (interpolation
+        (identifier))))
+  (field
+    (path
+      (identifier))
+    (string
+      (interpolation
+        (field_access
+          (block
+            (field
+              (path
+                (identifier))
+              (integer)))
+          (identifier)))
+      (string_content)
+      (interpolation
+        (call
+          (identifier)
+          (arguments
+            (string
+              (string_content)
+              (interpolation
+                (identifier))))))))
+  (field
+    (path
+      (identifier))
+    (string
+      (interpolation
+        (block
+          (let
+            (path
+              (identifier))
+            (integer))
+          (identifier)))))
+  (field
+    (path
+      (identifier))
+    (string
+      (interpolation
+        (identifier)))))
+
+================================================================================
+Multi-quote strings
+================================================================================
+
+a = """
+    {name} has "quotes" and ""more""
+"""
+b = """"has """ inside""""
+c = """a""" + "b"
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (field
+    (path
+      (identifier))
+    (string
+      (string_content)
+      (interpolation
+        (identifier))
+      (string_content)))
+  (field
+    (path
+      (identifier))
+    (string
+      (string_content)))
+  (field
+    (path
+      (identifier))
+    (binary
+      (string
+        (string_content))
+      (string
+        (string_content)))))
+
+================================================================================
+Raw strings
+================================================================================
+
+a = r"C:\{done}"
+b = r""
+c = r"""raw "" {x} \n"""
+r = 1
+d = r
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (field
+    (path
+      (identifier))
+    (raw_string
+      (string_content)))
+  (field
+    (path
+      (identifier))
+    (raw_string))
+  (field
+    (path
+      (identifier))
+    (raw_string
+      (string_content)))
+  (field
+    (path
+      (identifier))
+    (integer))
+  (field
+    (path
+      (identifier))
+    (identifier)))

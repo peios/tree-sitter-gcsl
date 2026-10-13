@@ -1,0 +1,231 @@
+================================================================================
+type items: names, qualified and applied types
+================================================================================
+
+type A = Int
+type B = t.PackageDef
+type C = Future<Future<Int>>
+type D = List<String>
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (type_declaration
+    (identifier)
+    (type_identifier))
+  (type_declaration
+    (identifier)
+    (qualified_type
+      (identifier)
+      (identifier)))
+  (type_declaration
+    (identifier)
+    (applied_type
+      (type_identifier)
+      (applied_type
+        (type_identifier)
+        (type_identifier))))
+  (type_declaration
+    (identifier)
+    (applied_type
+      (type_identifier)
+      (type_identifier))))
+
+================================================================================
+Record types: defaults, spreads, quoted names, lines
+================================================================================
+
+type Install = { from: String, to: String, exclude: List<String> = [] }
+type Package = { ...PackageDef, name: String}
+type E = {}
+type F = {
+  "a b": Int = 1 + 2,
+  nested: {x: Int = 0},
+
+  last: String,
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (type_declaration
+    (identifier)
+    (record_type
+      (field_type
+        (identifier)
+        (type_identifier))
+      (field_type
+        (identifier)
+        (type_identifier))
+      (field_type
+        (identifier)
+        (applied_type
+          (type_identifier)
+          (type_identifier))
+        (list))))
+  (type_declaration
+    (identifier)
+    (record_type
+      (spread
+        (type_identifier))
+      (field_type
+        (identifier)
+        (type_identifier))))
+  (type_declaration
+    (identifier)
+    (record_type))
+  (type_declaration
+    (identifier)
+    (record_type
+      (field_type
+        (string
+          (string_content))
+        (type_identifier)
+        (binary
+          (integer)
+          (integer)))
+      (field_type
+        (identifier)
+        (record_type
+          (field_type
+            (identifier)
+            (type_identifier)
+            (integer))))
+      (field_type
+        (identifier)
+        (type_identifier)))))
+
+================================================================================
+Function types, markers and metas
+================================================================================
+
+type F = fn(Int, name: String,): Int
+type G = fn() ->> Int
+type H = fn(v: Version): PackageDef META-> PackageMeta
+type I = fn(): (fn(): Int) META: {a: Int}
+type J = fn() -> Int | Future<Int>
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (type_declaration
+    (identifier)
+    (function_type
+      (parameter_types
+        (parameter_type
+          (type_identifier))
+        (parameter_type
+          (identifier)
+          (type_identifier)))
+      (effect)
+      (type_identifier)))
+  (type_declaration
+    (identifier)
+    (function_type
+      (parameter_types)
+      (effect)
+      (type_identifier)))
+  (type_declaration
+    (identifier)
+    (function_type
+      (parameter_types
+        (parameter_type
+          (identifier)
+          (type_identifier)))
+      (effect)
+      (type_identifier)
+      (meta_type
+        (effect)
+        (type_identifier))))
+  (type_declaration
+    (identifier)
+    (function_type
+      (parameter_types)
+      (effect)
+      (parenthesized_type
+        (function_type
+          (parameter_types)
+          (effect)
+          (type_identifier)))
+      (meta_type
+        (effect)
+        (record_type
+          (field_type
+            (identifier)
+            (type_identifier))))))
+  (type_declaration
+    (identifier)
+    (function_type
+      (parameter_types)
+      (effect)
+      (union_type
+        (type_identifier)
+        (applied_type
+          (type_identifier)
+          (type_identifier))))))
+
+================================================================================
+List types, unions and parentheses
+================================================================================
+
+type K = Int[][]
+type L = {a: Int}[]
+type M = (fn(): Int)[]
+type N = Int | Future<Int>[]
+type O = (fn(): Int) | Future<fn(): Int>
+type P = A |
+  B |
+  C
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (type_declaration
+    (identifier)
+    (list_type
+      (list_type
+        (type_identifier))))
+  (type_declaration
+    (identifier)
+    (list_type
+      (record_type
+        (field_type
+          (identifier)
+          (type_identifier)))))
+  (type_declaration
+    (identifier)
+    (list_type
+      (parenthesized_type
+        (function_type
+          (parameter_types)
+          (effect)
+          (type_identifier)))))
+  (type_declaration
+    (identifier)
+    (union_type
+      (type_identifier)
+      (list_type
+        (applied_type
+          (type_identifier)
+          (type_identifier)))))
+  (type_declaration
+    (identifier)
+    (union_type
+      (parenthesized_type
+        (function_type
+          (parameter_types)
+          (effect)
+          (type_identifier)))
+      (applied_type
+        (type_identifier)
+        (function_type
+          (parameter_types)
+          (effect)
+          (type_identifier)))))
+  (type_declaration
+    (identifier)
+    (union_type
+      (union_type
+        (type_identifier)
+        (type_identifier))
+      (type_identifier))))

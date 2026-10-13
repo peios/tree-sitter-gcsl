@@ -1,0 +1,456 @@
+================================================================================
+let, let mut and annotations
+================================================================================
+
+let x = 1
+let mut n: Int = 0
+let a.b.c = 2
+let p: {a: Int} = {a = 1}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (let
+    (path
+      (identifier))
+    (integer))
+  (let
+    (path
+      (identifier))
+    (type_identifier)
+    (integer))
+  (let
+    (path
+      (identifier)
+      (identifier)
+      (identifier))
+    (integer))
+  (let
+    (path
+      (identifier))
+    (record_type
+      (field_type
+        (identifier)
+        (type_identifier)))
+    (block
+      (field
+        (path
+          (identifier))
+        (integer)))))
+
+================================================================================
+Fields: plain, annotated, quoted and dotted
+================================================================================
+
+port = 8080
+host: String = "localhost"
+"log level" = "info"
+"a b": Int = 1
+server.limits."max conns" = 10
+x : Int
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (field
+    (path
+      (identifier))
+    (integer))
+  (field
+    (path
+      (identifier))
+    (type_identifier)
+    (string
+      (string_content)))
+  (field
+    (path
+      (string
+        (string_content)))
+    (string
+      (string_content)))
+  (field
+    (path
+      (string
+        (string_content)))
+    (type_identifier)
+    (integer))
+  (field
+    (path
+      (identifier)
+      (identifier)
+      (string
+        (string_content)))
+    (integer))
+  (ascription
+    (identifier)
+    (type_identifier)))
+
+================================================================================
+Rebinds, with index segments
+================================================================================
+
+n := n + 1
+conf.port := 1
+xs[0] := 1
+grid[y][x].up := true
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (rebind
+    (path
+      (identifier))
+    (binary
+      (identifier)
+      (integer)))
+  (rebind
+    (path
+      (identifier)
+      (identifier))
+    (integer))
+  (rebind
+    (path
+      (identifier)
+      (index_segment
+        (integer)))
+    (integer))
+  (rebind
+    (path
+      (identifier)
+      (index_segment
+        (identifier))
+      (index_segment
+        (identifier))
+      (identifier))
+    (boolean)))
+
+================================================================================
+Results and spread items
+================================================================================
+
+{
+  ...base
+  ...conf : {b: Int}
+  = 1
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (block
+    (spread
+      (identifier))
+    (spread
+      (ascription
+        (identifier)
+        (record_type
+          (field_type
+            (identifier)
+            (type_identifier)))))
+    (result
+      (integer))))
+
+================================================================================
+Named and public functions
+================================================================================
+
+fn add(a: Int, b: Int = 1): Int { a + b }
+def hello(name: String) -> String { "hi {name}" }
+def dev.peios.hello(n: Int,) ->> Int { n }
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (named_function
+    (identifier)
+    (parameters
+      (parameter
+        (identifier)
+        (type_identifier))
+      (parameter
+        (identifier)
+        (type_identifier)
+        (integer)))
+    (effect)
+    (type_identifier)
+    (block
+      (binary
+        (identifier)
+        (identifier))))
+  (public_function
+    (dotted_name
+      (identifier))
+    (parameters
+      (parameter
+        (identifier)
+        (type_identifier)))
+    (effect)
+    (type_identifier)
+    (block
+      (string
+        (string_content)
+        (interpolation
+          (identifier)))))
+  (public_function
+    (dotted_name
+      (identifier)
+      (identifier)
+      (identifier))
+    (parameters
+      (parameter
+        (identifier)
+        (type_identifier)))
+    (effect)
+    (type_identifier)
+    (block
+      (identifier))))
+
+================================================================================
+break, continue and return, with labels and values
+================================================================================
+
+for {
+  break
+  break 1
+  break'outer
+  break'outer 2
+  continue
+  continue'outer
+  return
+  return'blk x
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (for
+    (block
+      (break)
+      (break
+        (integer))
+      (break
+        (label))
+      (break
+        (label)
+        (integer))
+      (continue)
+      (continue
+        (label))
+      (return)
+      (return
+        (label)
+        (identifier)))))
+
+================================================================================
+Separators, blank lines and comments
+================================================================================
+
+# a comment
+;; a = 1;; b = 2
+
+c = 3 # trailing comment
+# another
+{ ; d = 4 ; }
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (comment)
+  (field
+    (path
+      (identifier))
+    (integer))
+  (field
+    (path
+      (identifier))
+    (integer))
+  (field
+    (path
+      (identifier))
+    (integer))
+  (comment)
+  (comment)
+  (block
+    (field
+      (path
+        (identifier))
+      (integer))))
+
+================================================================================
+Attributes
+================================================================================
+
+#![no_prelude]
+#!/usr/bin/env gcsl
+#[shadowable]
+version = "1.2"
+#[shadowable] import a.b
+#[def_type]
+#[shadowable]
+def package(name: String, func: fn(): Int) -> Int { func() }
+# [x] is a comment, as is #[x y]
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (inner_attribute)
+  (comment)
+  (attribute)
+  (field
+    (path
+      (identifier))
+    (string
+      (string_content)))
+  (attribute)
+  (import
+    (module_path
+      (identifier)
+      (identifier)))
+  (attribute)
+  (attribute)
+  (public_function
+    (dotted_name
+      (identifier))
+    (parameters
+      (parameter
+        (identifier)
+        (type_identifier))
+      (parameter
+        (identifier)
+        (function_type
+          (parameter_types)
+          (effect)
+          (type_identifier))))
+    (effect)
+    (type_identifier)
+    (block
+      (call
+        (identifier)
+        (arguments))))
+  (comment))
+
+================================================================================
+Contextual names: type, defmeta, from and META
+================================================================================
+
+type = 1
+type.x = 2
+type: Int = 3
+let type = 4
+defmeta = 5
+x = defmeta p
+from = 6
+META = 7
+y = { from = "a"; to = "b" }
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (field
+    (path
+      (identifier))
+    (integer))
+  (field
+    (path
+      (identifier)
+      (identifier))
+    (integer))
+  (field
+    (path
+      (identifier))
+    (type_identifier)
+    (integer))
+  (let
+    (path
+      (identifier))
+    (integer))
+  (field
+    (path
+      (identifier))
+    (integer))
+  (field
+    (path
+      (identifier))
+    (reference
+      (identifier)
+      (definition_path
+        (segment
+          (identifier)))))
+  (field
+    (path
+      (identifier))
+    (integer))
+  (field
+    (path
+      (identifier))
+    (integer))
+  (field
+    (path
+      (identifier))
+    (block
+      (field
+        (path
+          (identifier))
+        (string
+          (string_content)))
+      (field
+        (path
+          (identifier))
+        (string
+          (string_content))))))
+
+================================================================================
+Imports
+================================================================================
+
+import fileroot
+import _lib.ppk
+import a.b as c
+import x from m
+import x, y as z from a.b
+import * from prelude
+import a, * from p
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (import
+    (module_path
+      (identifier)))
+  (import
+    (module_path
+      (identifier)
+      (identifier)))
+  (import
+    (module_path
+      (identifier)
+      (identifier))
+    (identifier))
+  (import
+    (import_member
+      (module_path
+        (identifier)))
+    (module_path
+      (identifier)))
+  (import
+    (import_member
+      (module_path
+        (identifier)))
+    (import_member
+      (module_path
+        (identifier))
+      (identifier))
+    (module_path
+      (identifier)
+      (identifier)))
+  (import
+    (wildcard)
+    (module_path
+      (identifier)))
+  (import
+    (import_member
+      (module_path
+        (identifier)))
+    (wildcard)
+    (module_path
+      (identifier))))

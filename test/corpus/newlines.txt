@@ -1,0 +1,270 @@
+================================================================================
+A call spanning lines
+================================================================================
+
+manifest = ppk.commit(
+    name = pkg.name,
+    version = pkg.version
+)
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (field
+    (path
+      (identifier))
+    (call
+      (field_access
+        (identifier)
+        (identifier))
+      (arguments
+        (named_argument
+          (identifier)
+          (field_access
+            (identifier)
+            (identifier)))
+        (named_argument
+          (identifier)
+          (field_access
+            (identifier)
+            (identifier)))))))
+
+================================================================================
+A list spanning lines
+================================================================================
+
+xs = [
+  1,
+  2
+  , 3,
+]
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (field
+    (path
+      (identifier))
+    (list
+      (integer)
+      (integer)
+      (integer))))
+
+================================================================================
+A block inside a call's parentheses is newline-sensitive
+================================================================================
+
+f({
+  a = 1
+  b = 2
+})
+g(fn(n: Int): Int {
+  let m = n * 2
+  m + 1
+})
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (call
+    (identifier)
+    (arguments
+      (block
+        (field
+          (path
+            (identifier))
+          (integer))
+        (field
+          (path
+            (identifier))
+          (integer)))))
+  (call
+    (identifier)
+    (arguments
+      (function
+        (parameters
+          (parameter
+            (identifier)
+            (type_identifier)))
+        (effect)
+        (type_identifier)
+        (block
+          (let
+            (path
+              (identifier))
+            (binary
+              (identifier)
+              (integer)))
+          (binary
+            (identifier)
+            (integer)))))))
+
+================================================================================
+A newline after an operator, =, :, let, mut or ... continues the item
+================================================================================
+
+total = a +
+  b
+name =
+  "x"
+let
+  mut
+  n = 1
+x:
+  Int = 2
+{
+  ...
+    base
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (field
+    (path
+      (identifier))
+    (binary
+      (identifier)
+      (identifier)))
+  (field
+    (path
+      (identifier))
+    (string
+      (string_content)))
+  (let
+    (path
+      (identifier))
+    (integer))
+  (field
+    (path
+      (identifier))
+    (type_identifier)
+    (integer))
+  (block
+    (spread
+      (identifier))))
+
+================================================================================
+An else on the next line, past comments
+================================================================================
+
+if a {
+  1
+}
+# not yet
+else if b {
+  2
+}
+
+else {
+  3
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (if
+    (identifier)
+    (block
+      (integer))
+    (comment)
+    (if
+      (identifier)
+      (block
+        (integer))
+      (block
+        (integer)))))
+
+================================================================================
+An if without else, then a newline, inside brackets
+================================================================================
+
+deps = [
+  ...if x { [a] }
+]
+f(if x { 1 }
+)
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (field
+    (path
+      (identifier))
+    (list
+      (spread
+        (if
+          (identifier)
+          (block
+            (list
+              (identifier)))))))
+  (call
+    (identifier)
+    (arguments
+      (if
+        (identifier)
+        (block
+          (integer))))))
+
+================================================================================
+A newline ends an item before a [, a { or a name
+================================================================================
+
+f
+[1]
+g
+{ 2 }
+h
+k
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (identifier)
+  (list
+    (integer))
+  (identifier)
+  (block
+    (integer))
+  (identifier)
+  (identifier))
+
+================================================================================
+Inside brackets an index or a trailing block may start the next line
+================================================================================
+
+y = (xs
+  [0])
+z = (f
+  { 1 })
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (field
+    (path
+      (identifier))
+    (parenthesized_expression
+      (index
+        (identifier)
+        (integer))))
+  (field
+    (path
+      (identifier))
+    (parenthesized_expression
+      (call
+        (identifier)
+        (block
+          (integer))))))
+
+================================================================================
+A dot starting a line is not a continuation
+:error
+================================================================================
+
+x = a
+  .b
+
+--------------------------------------------------------------------------------
+
+(source_file)

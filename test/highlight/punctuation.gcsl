@@ -1,0 +1,30 @@
+let p: Int = 1 + 2 * 3
+#    ^ punctuation.delimiter
+#          ^ operator
+#              ^ operator
+#                  ^ operator
+xs[0] := -1
+# ^ punctuation.bracket
+#     ^ operator
+#        ^ operator
+r: List<Int>[] = []
+#      ^ punctuation.bracket
+#          ^ punctuation.bracket
+#           ^ punctuation.bracket
+#                ^ punctuation.bracket
+u: Future<Int> | Thing = 1
+#              ^ operator
+w = [...xs, 0..2]
+#   ^ punctuation.bracket
+#    ^ operator
+#         ^ punctuation.delimiter
+#            ^ operator
+{ a = 1; b = 2 }
+# <- punctuation.bracket
+#      ^ punctuation.delimiter
+#              ^ punctuation.bracket
+import * from p
+#      ^ operator
+f(a.b)
+#^ punctuation.bracket
+#  ^ punctuation.delimiter

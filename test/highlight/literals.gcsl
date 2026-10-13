@@ -1,0 +1,33 @@
+#![no_prelude]
+# <- attribute
+a = "text {name} \n {{ }}"
+#   ^ string
+#    ^ string
+#         ^ punctuation.special
+#          ^ variable
+#              ^ punctuation.special
+#                ^ string.escape
+#                   ^ string.escape
+#                      ^ string.escape
+b = r"C:\{x}"
+#   ^ string.special
+#       ^ string.special
+#        ^ string.special
+c = [1, 1.5, 2e3, true, false]
+#    ^ number
+#       ^ number.float
+#            ^ number.float
+#                 ^ boolean
+#                       ^ boolean
+d = 1 # trailing
+#     ^ comment
+#[shadowable]
+# <- attribute
+e = 1
+f = for'outer x in xs { break'outer x }
+#      ^ label
+#                            ^ label
+g = """{x} "quoted" """
+#      ^ punctuation.special
+#       ^ variable
+#          ^ string

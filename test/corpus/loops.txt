@@ -1,0 +1,183 @@
+================================================================================
+Iteration, with a guard and a label
+================================================================================
+
+let found = for v in func.versions if v.version == version { break v }
+let rows = for'rows r in grid { for c in r { if c < 0 { continue'rows }; c * 10 } }
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (let
+    (path
+      (identifier))
+    (for
+      (identifier)
+      (field_access
+        (identifier)
+        (identifier))
+      (binary
+        (field_access
+          (identifier)
+          (identifier))
+        (identifier))
+      (block
+        (break
+          (identifier)))))
+  (let
+    (path
+      (identifier))
+    (for
+      (label)
+      (identifier)
+      (identifier)
+      (block
+        (for
+          (identifier)
+          (identifier)
+          (block
+            (if
+              (binary
+                (identifier)
+                (integer))
+              (block
+                (continue
+                  (label))))
+            (binary
+              (identifier)
+              (integer))))))))
+
+================================================================================
+A loop with no condition
+================================================================================
+
+for { break }
+for'l { break'l 1 }
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (for
+    (block
+      (break)))
+  (for
+    (label)
+    (block
+      (break
+        (label)
+        (integer)))))
+
+================================================================================
+Condition loops and headers
+================================================================================
+
+for done < 2 { done := done + 1 }
+let costs = for let i = 0; i < len(jobs); i := i + 1 { jobs[i].cost }
+for let mut i = 0; let r = ({ a = 1 }); r.a < 3; i := i + 1 { }
+for
+  x < 3 { }
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (for
+    (binary
+      (identifier)
+      (integer))
+    (block
+      (rebind
+        (path
+          (identifier))
+        (binary
+          (identifier)
+          (integer)))))
+  (let
+    (path
+      (identifier))
+    (for
+      (let
+        (path
+          (identifier))
+        (integer))
+      (binary
+        (identifier)
+        (call
+          (identifier)
+          (arguments
+            (identifier))))
+      (rebind
+        (path
+          (identifier))
+        (binary
+          (identifier)
+          (integer)))
+      (block
+        (field_access
+          (index
+            (identifier)
+            (identifier))
+          (identifier)))))
+  (for
+    (let
+      (path
+        (identifier))
+      (integer))
+    (let
+      (path
+        (identifier))
+      (parenthesized_expression
+        (block
+          (field
+            (path
+              (identifier))
+            (integer)))))
+    (binary
+      (field_access
+        (identifier)
+        (identifier))
+      (integer))
+    (rebind
+      (path
+        (identifier))
+      (binary
+        (identifier)
+        (integer)))
+    (block))
+  (for
+    (binary
+      (identifier)
+      (integer))
+    (block)))
+
+================================================================================
+do loops
+================================================================================
+
+let attempts = do { tries := tries + 1; tries } for tries < 2
+do'again { 1 } for a or b
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (let
+    (path
+      (identifier))
+    (do
+      (block
+        (rebind
+          (path
+            (identifier))
+          (binary
+            (identifier)
+            (integer)))
+        (identifier))
+      (binary
+        (identifier)
+        (integer))))
+  (do
+    (label)
+    (block
+      (integer))
+    (binary
+      (identifier)
+      (identifier))))

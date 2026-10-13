@@ -1,0 +1,689 @@
+================================================================================
+Literals
+================================================================================
+
+[1, 1_000, 1.5, 2e10, 1.5e-3, 3E+2, true, false, "s", r"r"]
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (list
+    (integer)
+    (integer)
+    (float)
+    (float)
+    (float)
+    (float)
+    (boolean)
+    (boolean)
+    (string
+      (string_content))
+    (raw_string
+      (string_content))))
+
+================================================================================
+Precedence: or, and, not, comparison
+================================================================================
+
+a or b and c
+not a == b and c
+not a and b
+x == y or x !== z
+a === b != c
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (binary
+    (identifier)
+    (binary
+      (identifier)
+      (identifier)))
+  (binary
+    (unary
+      (binary
+        (identifier)
+        (identifier)))
+    (identifier))
+  (binary
+    (unary
+      (identifier))
+    (identifier))
+  (binary
+    (binary
+      (identifier)
+      (identifier))
+    (binary
+      (identifier)
+      (identifier)))
+  (binary
+    (binary
+      (identifier)
+      (identifier))
+    (identifier)))
+
+================================================================================
+Precedence: ranges, sums and products
+================================================================================
+
+0..len(xs) - 1
+a..b == c
+-1..=1
+1 + 2 * 3
+8 - 3 - 2
+a // b % c / d
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (binary
+    (integer)
+    (binary
+      (call
+        (identifier)
+        (arguments
+          (identifier)))
+      (integer)))
+  (binary
+    (binary
+      (identifier)
+      (identifier))
+    (identifier))
+  (binary
+    (unary
+      (integer))
+    (integer))
+  (binary
+    (integer)
+    (binary
+      (integer)
+      (integer)))
+  (binary
+    (binary
+      (integer)
+      (integer))
+    (integer))
+  (binary
+    (binary
+      (binary
+        (identifier)
+        (identifier))
+      (identifier))
+    (identifier)))
+
+================================================================================
+Ascription, as and is
+================================================================================
+
+1 + 2 : Float
+-5 : Float
+-x as Int
+a + b as Int
+x : A : B
+x + 1 is Int
+not x is Int
+x is Int and y
+x is Int | String
+x as Int | String
+x : Int.y
+x : Int[0]
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (binary
+    (integer)
+    (ascription
+      (integer)
+      (type_identifier)))
+  (ascription
+    (unary
+      (integer))
+    (type_identifier))
+  (narrowing
+    (unary
+      (identifier))
+    (type_identifier))
+  (binary
+    (identifier)
+    (narrowing
+      (identifier)
+      (type_identifier)))
+  (ascription
+    (ascription
+      (identifier)
+      (type_identifier))
+    (type_identifier))
+  (type_test
+    (binary
+      (identifier)
+      (integer))
+    (type_identifier))
+  (unary
+    (type_test
+      (identifier)
+      (type_identifier)))
+  (binary
+    (type_test
+      (identifier)
+      (type_identifier))
+    (identifier))
+  (type_test
+    (identifier)
+    (union_type
+      (type_identifier)
+      (type_identifier)))
+  (narrowing
+    (identifier)
+    (union_type
+      (type_identifier)
+      (type_identifier)))
+  (ascription
+    (identifier)
+    (qualified_type
+      (identifier)
+      (identifier)))
+  (index
+    (ascription
+      (identifier)
+      (type_identifier))
+    (integer)))
+
+================================================================================
+Negation, await and postfix chains
+================================================================================
+
+-a.b
+-f(1)
+await x + 1
+await f()
+await x.y
+a.b(1).c
+f(1)(2)
+f(x)[0].name[1]
+x."quoted name"
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (unary
+    (field_access
+      (identifier)
+      (identifier)))
+  (unary
+    (call
+      (identifier)
+      (arguments
+        (integer))))
+  (binary
+    (unary
+      (identifier))
+    (integer))
+  (unary
+    (call
+      (identifier)
+      (arguments)))
+  (unary
+    (field_access
+      (identifier)
+      (identifier)))
+  (field_access
+    (call
+      (field_access
+        (identifier)
+        (identifier))
+      (arguments
+        (integer)))
+    (identifier))
+  (call
+    (call
+      (identifier)
+      (arguments
+        (integer)))
+    (arguments
+      (integer)))
+  (index
+    (field_access
+      (index
+        (call
+          (identifier)
+          (arguments
+            (identifier)))
+        (integer))
+      (identifier))
+    (integer))
+  (field_access
+    (identifier)
+    (string
+      (string_content))))
+
+================================================================================
+lazy takes the longest expression
+================================================================================
+
+g = lazy a + b
+h = lazy { exec(["ls"]) }
+k = x + lazy a or b
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (field
+    (path
+      (identifier))
+    (lazy
+      (binary
+        (identifier)
+        (identifier))))
+  (field
+    (path
+      (identifier))
+    (lazy
+      (block
+        (call
+          (identifier)
+          (arguments
+            (list
+              (string
+                (string_content))))))))
+  (field
+    (path
+      (identifier))
+    (binary
+      (identifier)
+      (lazy
+        (binary
+          (identifier)
+          (identifier))))))
+
+================================================================================
+Calls: named arguments and trailing blocks
+================================================================================
+
+f(1, b = 2,)
+f()
+f { x = 1 }
+f(1) { x = 1 }
+g(a)(b) { 1 }.c
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (call
+    (identifier)
+    (arguments
+      (integer)
+      (named_argument
+        (identifier)
+        (integer))))
+  (call
+    (identifier)
+    (arguments))
+  (call
+    (identifier)
+    (block
+      (field
+        (path
+          (identifier))
+        (integer))))
+  (call
+    (identifier)
+    (arguments
+      (integer))
+    (block
+      (field
+        (path
+          (identifier))
+        (integer))))
+  (field_access
+    (call
+      (call
+        (identifier)
+        (arguments
+          (identifier)))
+      (arguments
+        (identifier))
+      (block
+        (integer)))
+    (identifier)))
+
+================================================================================
+No trailing block in an if condition
+================================================================================
+
+if f { 1 }
+if a and b { 1 }
+if (f { 1 }) { 2 }
+if f(x).y { 1 } else if g { 2 } else { 3 }
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (if
+    (identifier)
+    (block
+      (integer)))
+  (if
+    (binary
+      (identifier)
+      (identifier))
+    (block
+      (integer)))
+  (if
+    (parenthesized_expression
+      (call
+        (identifier)
+        (block
+          (integer))))
+    (block
+      (integer)))
+  (if
+    (field_access
+      (call
+        (identifier)
+        (arguments
+          (identifier)))
+      (identifier))
+    (block
+      (integer))
+    (if
+      (identifier)
+      (block
+        (integer))
+      (block
+        (integer)))))
+
+================================================================================
+Lists and spreads
+================================================================================
+
+[]
+[1, ...xs, ...a + b]
+content = [
+  { from = "a"; to = "b" },
+  ...if kernel_lane(v) { none_installed } else {
+    [ { from = "src/LICENSE-MIT"; to = "c" } ]
+  },
+  ...for x in xs { x },
+  ...{ = [1] },
+]
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (list)
+  (list
+    (integer)
+    (spread
+      (identifier))
+    (spread
+      (binary
+        (identifier)
+        (identifier))))
+  (field
+    (path
+      (identifier))
+    (list
+      (block
+        (field
+          (path
+            (identifier))
+          (string
+            (string_content)))
+        (field
+          (path
+            (identifier))
+          (string
+            (string_content))))
+      (spread
+        (if
+          (call
+            (identifier)
+            (arguments
+              (identifier)))
+          (block
+            (identifier))
+          (block
+            (list
+              (block
+                (field
+                  (path
+                    (identifier))
+                  (string
+                    (string_content)))
+                (field
+                  (path
+                    (identifier))
+                  (string
+                    (string_content))))))))
+      (spread
+        (for
+          (identifier)
+          (identifier)
+          (block
+            (identifier))))
+      (spread
+        (block
+          (result
+            (list
+              (integer))))))))
+
+================================================================================
+Blocks, labelled blocks and record blocks
+================================================================================
+
+{}
+{ a = 1; b = 2 }
+{'blk
+  let x = 1
+  return'blk x
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (block)
+  (block
+    (field
+      (path
+        (identifier))
+      (integer))
+    (field
+      (path
+        (identifier))
+      (integer)))
+  (block
+    (label)
+    (let
+      (path
+        (identifier))
+      (integer))
+    (return
+      (label)
+      (identifier))))
+
+================================================================================
+Function expressions
+================================================================================
+
+f = fn(x: Int): Int { x }
+g = fn(): {a: Int} { a = 1 }
+h = fn(cmd: String, env: {a: Int} = {a = 1},) -> String { sh(cmd) }
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (field
+    (path
+      (identifier))
+    (function
+      (parameters
+        (parameter
+          (identifier)
+          (type_identifier)))
+      (effect)
+      (type_identifier)
+      (block
+        (identifier))))
+  (field
+    (path
+      (identifier))
+    (function
+      (parameters)
+      (effect)
+      (record_type
+        (field_type
+          (identifier)
+          (type_identifier)))
+      (block
+        (field
+          (path
+            (identifier))
+          (integer)))))
+  (field
+    (path
+      (identifier))
+    (function
+      (parameters
+        (parameter
+          (identifier)
+          (type_identifier))
+        (parameter
+          (identifier)
+          (record_type
+            (field_type
+              (identifier)
+              (type_identifier)))
+          (block
+            (field
+              (path
+                (identifier))
+              (integer)))))
+      (effect)
+      (type_identifier)
+      (block
+        (call
+          (identifier)
+          (arguments
+            (identifier)))))))
+
+================================================================================
+Def-type references
+================================================================================
+
+package dev.peios.testpkg("0.1.0")
+x = package dev.peios.testpkg.versions
+y = (package dev.peios.testpkg).versions
+z = package x.versions[0]
+-p x
+t.package a.b
+v = package org.gnu.gmp-c++
+w = package x.a+b
+u = package x.a + b
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (call
+    (reference
+      (identifier)
+      (definition_path
+        (segment
+          (identifier))
+        (segment
+          (identifier))
+        (segment
+          (identifier))))
+    (arguments
+      (string
+        (string_content))))
+  (field
+    (path
+      (identifier))
+    (reference
+      (identifier)
+      (definition_path
+        (segment
+          (identifier))
+        (segment
+          (identifier))
+        (segment
+          (identifier))
+        (segment
+          (identifier)))))
+  (field
+    (path
+      (identifier))
+    (field_access
+      (parenthesized_expression
+        (reference
+          (identifier)
+          (definition_path
+            (segment
+              (identifier))
+            (segment
+              (identifier))
+            (segment
+              (identifier)))))
+      (identifier)))
+  (field
+    (path
+      (identifier))
+    (index
+      (reference
+        (identifier)
+        (definition_path
+          (segment
+            (identifier))
+          (segment
+            (identifier))))
+      (integer)))
+  (unary
+    (reference
+      (identifier)
+      (definition_path
+        (segment
+          (identifier)))))
+  (reference
+    (field_access
+      (identifier)
+      (identifier))
+    (definition_path
+      (segment
+        (identifier))
+      (segment
+        (identifier))))
+  (field
+    (path
+      (identifier))
+    (reference
+      (identifier)
+      (definition_path
+        (segment
+          (identifier))
+        (segment
+          (identifier))
+        (segment
+          (identifier)))))
+  (field
+    (path
+      (identifier))
+    (reference
+      (identifier)
+      (definition_path
+        (segment
+          (identifier))
+        (segment
+          (identifier)))))
+  (field
+    (path
+      (identifier))
+    (binary
+      (reference
+        (identifier)
+        (definition_path
+          (segment
+            (identifier))
+          (segment
+            (identifier))))
+      (identifier))))
