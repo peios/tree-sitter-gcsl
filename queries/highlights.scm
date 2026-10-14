@@ -184,9 +184,9 @@
 
 ; A definition path's segments are modules, but the last segment of a
 ; definition's path, the name it defines, which is a function, as a `def`'s
-; last name is: `libcap` in `def package org.kernel.libcap(v)`. A meta's and
-; a reference's last segment stays a module. Each segment matches one of
-; these patterns only.
+; last name is: `libcap` in `def package org.kernel.libcap(v)`, and likewise
+; the last segment of a meta's and a reference's path, which names that
+; definition. Each segment matches one of these patterns only.
 (definition_path
   (segment) @module
   .
@@ -200,21 +200,21 @@
 
 (meta
   path: (definition_path
-    (segment) @module .))
+    (segment) @function .))
 
 (meta
   path: (definition_path
     (segment
-      (identifier) @module) .))
+      (identifier) @function) .))
 
 (reference
   path: (definition_path
-    (segment) @module .))
+    (segment) @function .))
 
 (reference
   path: (definition_path
     (segment
-      (identifier) @module) .))
+      (identifier) @function) .))
 
 (definition
   path: (definition_path

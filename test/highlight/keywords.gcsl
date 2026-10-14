@@ -56,7 +56,7 @@ defmeta package x.y = {}
 # <- keyword.function
 #       ^ keyword.function
 #               ^ module
-#                 ^ module
+#                 ^ function
 #                   ^ operator
 def package x.y(v) { }
 # <- keyword.function

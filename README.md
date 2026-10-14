@@ -85,8 +85,10 @@ pattern stands on both sides of the general one. The effect markers `:`,
 called field, `ppk.commit(...)`, is `@function.call`. A field item at a
 file's top level (`meta = {..}`) names a `@variable`, one in a body a
 `@variable.member`. The segments of a definition path are `@module`, but the
-last one of a definition's, the name it defines (`libcap` in `def package
-org.kernel.libcap(v)`), is `@function`, as a `def`'s last name is.
+last one, the definition's name (`libcap` in `def package
+org.kernel.libcap(v)`, `defmeta package org.kernel.libcap` and the
+reference `build org.kernel.libcap`), is `@function`, as a `def`'s last name
+is.
 
 ## Indents, folds and text objects
 

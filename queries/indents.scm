@@ -24,6 +24,12 @@
 ((block) @indent.begin
   (#not-has-parent? @indent.begin if))
 
+; A binary expression continued on later lines, `"a"` newline `+ "b"`,
+; indents them a level (a hanging indent). Only the outermost of a chain
+; opens it, its operands starting on the line it does.
+((binary) @indent.begin
+  (#not-has-parent? @indent.begin binary))
+
 ; A line starting with the closing bracket goes back a level (a branch, as
 ; nvim-treesitter calls it), and a new line after a line ending with one is
 ; indented as the line the node started on (`@indent.end`).

@@ -30,7 +30,7 @@ v = package dev.peios.x-c++.1rc2("1")
 #           ^ module
 #                     ^ module
 #                        ^ module
-#                           ^ module
+#                           ^ function
 import x as y, z from m.n
 #      ^ variable
 #           ^ variable
@@ -68,7 +68,7 @@ def build gmp-c++.6(v) { }
 #                 ^ function
 defmeta package org.kernel.libcap { }
 #               ^ module
-#                          ^ module
+#                          ^ function
 b = build org.kernel.libcap
 #         ^ module
-#                    ^ module
+#                    ^ function
