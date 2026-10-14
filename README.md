@@ -151,6 +151,17 @@ needs turning on:
 - text objects: nvim-treesitter-textobjects, with keymaps for the objects
   wanted (on its `main` branch, set with its own `select_textobject`).
 
+For the language server (Neovim 0.11):
+
+```lua
+vim.lsp.config("gcsl", {
+  cmd = { "gcsl", "lsp" },
+  filetypes = { "gcsl" },
+  root_markers = { "workspace.gcsl", ".git" },
+})
+vim.lsp.enable("gcsl")
+```
+
 ## clackatoo
 
 A language pack is a directory in `~/.local/share/clackatoo/languages`, say
@@ -162,7 +173,14 @@ A language pack is a directory in `~/.local/share/clackatoo/languages`, say
   grammar = "gcsl"
   extensions = ["gcsl"]
   filenames = []
+  server = ["gcsl", "lsp"]
+  roots = ["workspace.gcsl"]
   ```
+
+  `server` starts gcsl's language server (`gcsl lsp`, from the gcsl
+  repository's `gcsl-cli`) for diagnostics, hover, definition,
+  references, rename, completion, signature help and formatting; `roots`
+  makes a project of each workspace.
 
 - `grammar.wasm`: `tree-sitter-gcsl.wasm` from `tree-sitter build --wasm`;
 - `highlights.scm`: `queries/highlights.scm`;
