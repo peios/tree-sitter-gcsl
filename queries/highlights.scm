@@ -182,16 +182,54 @@
 (import_member
   alias: (identifier) @variable)
 
+; A definition path's segments are modules, but the last segment of a
+; definition's path, the name it defines, which is a function, as a `def`'s
+; last name is: `libcap` in `def package org.kernel.libcap(v)`. A meta's and
+; a reference's last segment stays a module. Each segment matches one of
+; these patterns only.
 (definition_path
-  (segment) @module)
+  (segment) @module
+  .
+  (segment))
 
-(segment
-  (identifier) @module)
+(definition_path
+  (segment
+    (identifier) @module)
+  .
+  (segment))
+
+(meta
+  path: (definition_path
+    (segment) @module .))
+
+(meta
+  path: (definition_path
+    (segment
+      (identifier) @module) .))
+
+(reference
+  path: (definition_path
+    (segment) @module .))
+
+(reference
+  path: (definition_path
+    (segment
+      (identifier) @module) .))
+
+(definition
+  path: (definition_path
+    (segment) @function .))
+
+(definition
+  path: (definition_path
+    (segment
+      (identifier) @function) .))
 
 ; ---- Variables and fields ---------------------------------------------------
 
-; A `let` or a rebind names a variable, a field item a field; a path's later
-; names are fields.
+; A `let` or a rebind names a variable, and so does a field item at a file's
+; top level (`meta = {..}`); a field item in a body names a field. A path's
+; later names are fields.
 (let
   path: (path
     name: (identifier) @variable))
@@ -200,9 +238,15 @@
   path: (path
     name: (identifier) @variable))
 
-(field
-  path: (path
-    name: (identifier) @variable.member))
+(source_file
+  (field
+    path: (path
+      name: (identifier) @variable)))
+
+(block
+  (field
+    path: (path
+      name: (identifier) @variable.member)))
 
 (path
   field: (identifier) @variable.member)

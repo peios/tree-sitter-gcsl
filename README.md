@@ -82,7 +82,45 @@ the tree-sitter CLI and Neovim the last), so the query captures no node
 under two names, but for one field access called as a function, whose
 pattern stands on both sides of the general one. The effect markers `:`,
 `->>` and `->` of functions are `@keyword.modifier`. GCSL has no methods: a
-called field, `ppk.commit(...)`, is `@function.call`.
+called field, `ppk.commit(...)`, is `@function.call`. A field item at a
+file's top level (`meta = {..}`) names a `@variable`, one in a body a
+`@variable.member`. The segments of a definition path are `@module`, but the
+last one of a definition's, the name it defines (`libcap` in `def package
+org.kernel.libcap(v)`), is `@function`, as a `def`'s last name is.
+
+## Indents, folds and text objects
+
+- `queries/indents.scm`, in nvim-treesitter's indent captures, indents by
+  `shiftwidth` a level (4 in GCSL). Blocks, record types, lists, argument and
+  parameter lists and parentheses open a level, and a line starting with the
+  closing bracket goes back one. The blocks of an `if` open none of their
+  own: the `if` opens one level for all of them, and an `else` is a branch
+  of it, so an `else` starting a line lines up with the `if`, and
+  `if c { a } else {` on one line opens one level. The lines of a string
+  after its first (a `"""` or raw string's script), and comments, are
+  `@indent.auto`: their indent is left as it is.
+- `queries/folds.scm` (`@fold`): blocks, record types, lists, functions,
+  definitions and metas, and runs of imports. Only nodes of several lines
+  fold.
+- `queries/textobjects.scm`, in nvim-treesitter-textobjects' names:
+  `@function` (`def` items, named functions, function expressions,
+  definitions), `@class` (`type` items, record literals, metas; not the body
+  of a function, a definition or a meta), `@parameter` (parameters, arguments, list
+  elements, the fields of record types and literals, the outer with its
+  comma or `;`), `@block`, `@conditional`, `@loop` (`for`, `do`), `@call`,
+  `@comment`, `@return` (`return`, and a block's `= EXPR`), `@assignment`
+  (`let`, field items, rebinds; the inner is the value) and `@attribute`.
+  Each `.inner` is the inside of the braces or brackets. The query uses no
+  `#make-range!` and no predicates, so that clackatoo reads it as Neovim
+  does: an object of several nodes is captured on each of them.
+
+A record literal is a block whose first or last item is a field or a spread,
+standing anywhere but as the body of a function, a definition or a meta.
+
+`indents.scm` uses `#not-has-parent?`, which Neovim (built in; checked with
+0.11) and clackatoo both read. `tree-sitter test` runs no tests of these queries; they
+were checked against the newpkgs tree with Neovim's own indenter, folds and
+nvim-treesitter-textobjects.
 
 ## Neovim (nvim-treesitter, master branch)
 
@@ -99,9 +137,17 @@ parser_config.gcsl = {
 vim.filetype.add({ extension = { gcsl = "gcsl" } })
 ```
 
-Then `:TSInstall gcsl`, and copy `queries/highlights.scm` to
-`queries/gcsl/highlights.scm` in a runtime path directory, such as
-`~/.config/nvim/queries/gcsl/highlights.scm`.
+Then `:TSInstall gcsl`, and copy or link each of `queries/highlights.scm`,
+`indents.scm`, `folds.scm` and `textobjects.scm` into `queries/gcsl/` in a
+runtime path directory, such as `~/.config/nvim/queries/gcsl/`. Each then
+needs turning on:
+
+- indents: `indent = { enable = true }` in nvim-treesitter's setup (for
+  `gcsl` at least), which sets `indentexpr`;
+- folds: `foldmethod=expr` and `foldexpr=v:lua.vim.treesitter.foldexpr()`
+  for gcsl buffers;
+- text objects: nvim-treesitter-textobjects, with keymaps for the objects
+  wanted (on its `main` branch, set with its own `select_textobject`).
 
 ## clackatoo
 
@@ -117,4 +163,9 @@ A language pack is a directory in `~/.local/share/clackatoo/languages`, say
   ```
 
 - `grammar.wasm`: `tree-sitter-gcsl.wasm` from `tree-sitter build --wasm`;
-- `highlights.scm`: `queries/highlights.scm`.
+- `highlights.scm`: `queries/highlights.scm`;
+- `indents.scm`: `queries/indents.scm`, for Enter, `o` and `=`;
+- `textobjects.scm`: `queries/textobjects.scm`, of which clackatoo reads
+  `@function`, `@class` and `@parameter` (`af`/`if`, `ac`/`ic`, `aa`/`ia`).
+
+clackatoo reads no folds query, so `folds.scm` is for Neovim only.

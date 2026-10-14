@@ -10,7 +10,7 @@ let p: t.Package = make(n = 1)
 #                  ^ function.call
 #                       ^ variable.parameter
 q = len(xs) + p.size(1) + p.field
-# <- variable.member
+# <- variable
 #   ^ function.builtin
 #       ^ variable
 #             ^ variable
@@ -21,7 +21,7 @@ server.port := 1
 # <- variable
 #      ^ variable.member
 r: List<Int>[] = []
-# <- variable.member
+# <- variable
 #  ^ type.builtin
 u: Future<Int> | Thing = lazy 1
 #                ^ type
@@ -43,3 +43,32 @@ fn add(a: Int, b: fn(x: Int): Int): Int { b(a) }
 #                    ^ variable.parameter
 #                                         ^ function.call
 #                                           ^ variable
+meta = { homepage = "h"; versions = locked }
+# <- variable
+#        ^ variable.member
+#                        ^ variable.member
+#                                   ^ variable
+len = builtins.len
+# <- variable
+#     ^ variable
+#              ^ variable.member
+def package org.kernel.libcap(v) {
+#           ^ module
+#               ^ module
+#                      ^ function
+#                             ^ variable.parameter
+    version = "1"
+#   ^ variable.member
+    check = fn(root: String) -> {} { x = 1 }
+#   ^ variable.member
+#                                    ^ variable.member
+}
+def build gmp-c++.6(v) { }
+#         ^ module
+#                 ^ function
+defmeta package org.kernel.libcap { }
+#               ^ module
+#                          ^ module
+b = build org.kernel.libcap
+#         ^ module
+#                    ^ module

@@ -29,7 +29,7 @@ let mut v = await f(1)
 #           ^ keyword.modifier
 #                 ^ function.call
 x = if a and not b { 1 } else { 2 }
-# <- variable.member
+# <- variable
 #   ^ keyword.conditional
 #        ^ keyword.operator
 #            ^ keyword.operator
