@@ -175,12 +175,14 @@ A language pack is a directory in `~/.local/share/clackatoo/languages`, say
   filenames = []
   server = ["gcsl", "lsp"]
   roots = ["workspace.gcsl"]
+  word = "-"
   ```
 
   `server` starts gcsl's language server (`gcsl lsp`, from the gcsl
   repository's `gcsl-cli`) for diagnostics, hover, definition,
   references, rename, completion, signature help and formatting; `roots`
-  makes a project of each workspace.
+  makes a project of each workspace; `word` makes `-` part of a word,
+  as it is of a GCSL name.
 
 - `grammar.wasm`: `tree-sitter-gcsl.wasm` from `tree-sitter build --wasm`;
 - `highlights.scm`: `queries/highlights.scm`;
