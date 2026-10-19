@@ -1,0 +1,5 @@
+{
+    "source_root": "learn-staging",
+    "entries": [],
+    "review": "No pages wholly owned by this grammar were found. Clackatoo editor and configuration references describe the editor and remain in learn-staging. Existing GCSL language-server documentation remains in gcsl/docs/learn. The prior grammar README was rewritten into this repository's Learn contribution and maintenance guides."
+}
