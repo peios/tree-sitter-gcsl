@@ -1,0 +1,21 @@
+{
+    "package": {
+        "name": "dev.peios.tree-sitter-gcsl",
+        "version": "0.1.0-1",
+        "architecture": "x86_64",
+        "license_class": "free",
+        "description": "GCSL Tree-sitter "
+    },
+    "license_component": "parser",
+    "dependencies": {
+        "org.gnu.glibc": "*"
+    },
+    "files": {
+        "source:LICENSE": "usr/share/licenses/dev.peios.tree-sitter-gcsl/LICENSE",
+        "stage:licenses/parser/**": "usr/share/licenses/dev.peios.tree-sitter-gcsl/third-party",
+        "stage:usr/lib/x86_64-linux-peios/tree-sitter/gcsl.so": "usr/lib/x86_64-linux-peios/tree-sitter/gcsl.so",
+        "source:queries/*.scm": "usr/share/tree-sitter/queries/gcsl",
+        "source:src/node-types.json": "usr/share/tree-sitter/grammars/gcsl-node-types.json"
+    },
+    "executables": ["usr/lib/x86_64-linux-peios/tree-sitter/gcsl.so"]
+}

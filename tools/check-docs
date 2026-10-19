@@ -1,0 +1,9 @@
+#!/bin/sh
+# Validate this repository's standalone Learn contribution.
+set -eu
+cd "$(dirname "$0")/.."
+trail=${TRAIL:-trail}
+"$trail" lint docs/learn
+output=$(mktemp -d "${TMPDIR:-/tmp}/tree-sitter-gcsl-docs.XXXXXXXX")
+trap 'rm -rf -- "$output"' EXIT HUP INT TERM
+"$trail" build docs/learn --strict --no-cache --out "$output"

@@ -1,0 +1,18 @@
+{
+    "package": {
+        "name": "dev.peios.tree-sitter-gcsl-wasm",
+        "version": "0.1.0-1",
+        "architecture": "noarch",
+        "license_class": "free",
+        "description": "GCSL Tree-sitter wasm"
+    },
+    "license_component": "parser",
+    "dependencies": {},
+    "files": {
+        "source:LICENSE": "usr/share/licenses/dev.peios.tree-sitter-gcsl-wasm/LICENSE",
+        "stage:licenses/parser/**": "usr/share/licenses/dev.peios.tree-sitter-gcsl-wasm/third-party",
+        "stage:usr/share/tree-sitter/grammars/gcsl.wasm": "usr/share/tree-sitter/grammars/gcsl.wasm",
+        "source:queries/*.scm": "usr/share/tree-sitter/queries/gcsl"
+    },
+    "executables": []
+}

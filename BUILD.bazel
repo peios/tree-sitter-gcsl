@@ -1,0 +1,171 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library", "cc_test")
+load("//build:checks.bzl", "host_binary", "host_test")
+load("//packages:package.bzl", "package_store")
+
+package(default_visibility = ["//visibility:public"])
+
+cc_library(
+    name = "grammar",
+    srcs = [
+        "src/parser.c",
+        "src/scanner.c",
+    ],
+    hdrs = glob(["src/tree_sitter/*.h"]),
+    copts = [
+        "-std=c11",
+        "-fvisibility=hidden",
+    ],
+    includes = ["src"],
+    linkstatic = True,
+    alwayslink = True,
+)
+
+cc_binary(
+    name = "gcsl.so",
+    linkopts = [
+        "-Wl,-z,relro,-z,now",
+        "-Wl,-z,noexecstack",
+    ],
+    linkshared = True,
+    deps = [":grammar"],
+)
+
+filegroup(
+    name = "grammar-data",
+    srcs = [
+        "grammar.js",
+        "tree-sitter.json",
+    ] + glob([
+        "src/**",
+        "queries/**",
+        "test/corpus/**",
+        "test/highlight/**",
+    ]),
+)
+
+genrule(
+    name = "wasm",
+    srcs = [
+        ":grammar-data",
+        "tools/grammar-build.py",
+    ],
+    outs = ["tree-sitter-gcsl.wasm"],
+    cmd = "python3 $(location tools/grammar-build.py) wasm $(location @tree_sitter_cli//:tree-sitter) $(location @wasi_sdk//:bin/clang) $(location @binaryen//:bin/wasm-opt) $@",
+    tools = [
+        "@binaryen//:bin/wasm-opt",
+        "@binaryen//:files",
+        "@tree_sitter_cli//:tree-sitter",
+        "@wasi_sdk//:bin/clang",
+        "@wasi_sdk//:files",
+    ],
+)
+
+host_test(
+    name = "generated-test",
+    arguments = ["@tree_sitter_cli//:tree-sitter"],
+    data = [":grammar-data"],
+    mode = "check",
+    script = "tools/grammar-build.py",
+)
+
+host_test(
+    name = "corpus-test",
+    arguments = [
+        "@tree_sitter_cli//:tree-sitter",
+        ":gcsl.so",
+    ],
+    data = [":grammar-data"],
+    mode = "native",
+    script = "tools/grammar-tests.py",
+)
+
+host_test(
+    name = "wasm-test",
+    arguments = [
+        "@tree_sitter_cli//:tree-sitter",
+        ":wasm",
+    ],
+    data = [":grammar-data"],
+    mode = "wasm",
+    script = "tools/grammar-tests.py",
+)
+
+cc_test(
+    name = "runtime-test",
+    srcs = ["test/runtime.c"],
+    data = glob(["queries/*.scm"]),
+    deps = [
+        ":grammar",
+        "@tree_sitter//:runtime",
+    ],
+)
+
+cc_test(
+    name = "scanner-test",
+    srcs = ["test/scanner.c"],
+    copts = [
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+    ],
+    deps = [":grammar"],
+)
+
+filegroup(
+    name = "package-sources",
+    srcs = glob(
+        [
+            "**",
+            ".github/**",
+            ".bazel*",
+            ".gitignore",
+            ".gitattributes",
+        ],
+        allow_empty = True,
+        exclude = [
+            ".git/**",
+            "bazel-*/**",
+            "**/__pycache__/**",
+            "**/*.pyc",
+            ".trail-cache/**",
+            "docs/learn/dist/**",
+            "tree-sitter-gcsl.wasm",
+            "*.so",
+            "node_modules/**",
+            "out/**",
+            ".ci-tools/**",
+        ],
+    ) + [
+        "//build:sources",
+        "//packages:sources",
+        "//vendor/ppk:sources",
+    ],
+)
+
+filegroup(
+    name = "package-data",
+    srcs = [
+        "LICENSE",
+        "src/node-types.json",
+    ] + glob(["queries/*.scm"]),
+)
+
+filegroup(
+    name = "debug-sources",
+    srcs = [
+        "src/parser.c",
+        "src/scanner.c",
+    ] + glob(["src/tree_sitter/*.h"]),
+)
+
+package_store(
+    name = "packages",
+    packages = ["//packages:all"],
+)
+
+host_binary(
+    name = "generate",
+    arguments = ["@tree_sitter_cli//:tree-sitter"],
+    mode = "generate",
+    script = "tools/grammar-build.py",
+)

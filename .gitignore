@@ -1,6 +1,12 @@
-# Built by `tree-sitter build` and `tree-sitter build --wasm`.
+# Generated binaries and local caches.
 *.wasm
 *.so
-build/
-target/
-node_modules/
+/bazel-*
+/target/
+/node_modules/
+/.ci-tools/
+/.trail-cache/
+/out/
+**/__pycache__/
+*.pyc
+/docs/learn/dist/
