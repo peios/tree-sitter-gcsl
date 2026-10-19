@@ -1,31 +1,30 @@
 {
-  "$schema": "https://tree-sitter.github.io/tree-sitter/assets/schemas/config.schema.json",
-  "grammars": [
-    {
-      "name": "gcsl",
-      "camelcase": "Gcsl",
-      "title": "GCSL",
-      "scope": "source.gcsl",
-      "path": ".",
-      "file-types": [
-        "gcsl"
-      ],
-      "highlights": "queries/highlights.scm",
-      "injection-regex": "^gcsl$"
+    "$schema": "https://tree-sitter.github.io/tree-sitter/assets/schemas/config.schema.json",
+    "grammars": [
+        {
+            "name": "gcsl",
+            "camelcase": "Gcsl",
+            "title": "GCSL",
+            "scope": "source.gcsl",
+            "path": ".",
+            "file-types": ["gcsl"],
+            "highlights": "queries/highlights.scm",
+            "injection-regex": "^gcsl$"
+        }
+    ],
+    "metadata": {
+        "version": "0.1.0",
+        "description": "GCSL grammar for tree-sitter",
+        "license": "MIT"
+    },
+    "bindings": {
+        "c": false,
+        "go": false,
+        "java": false,
+        "node": false,
+        "python": false,
+        "rust": false,
+        "swift": false,
+        "zig": false
     }
-  ],
-  "metadata": {
-    "version": "0.1.0",
-    "description": "GCSL grammar for tree-sitter"
-  },
-  "bindings": {
-    "c": false,
-    "go": false,
-    "java": false,
-    "node": false,
-    "python": false,
-    "rust": false,
-    "swift": false,
-    "zig": false
-  }
 }
