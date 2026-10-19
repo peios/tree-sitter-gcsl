@@ -13,8 +13,8 @@
 (comment) @comment
 
 [
-  (attribute)
-  (inner_attribute)
+    (attribute)
+    (inner_attribute)
 ] @attribute
 
 ; ---- Literals ---------------------------------------------------------------
@@ -26,10 +26,10 @@
 (escape_sequence) @string.escape
 
 (interpolation
-  [
-    "{"
-    "}"
-  ] @punctuation.special)
+    [
+        "{"
+        "}"
+    ] @punctuation.special)
 
 (integer) @number
 
@@ -42,59 +42,59 @@
 ; ---- Keywords ---------------------------------------------------------------
 
 [
-  "fn"
-  "def"
-  "defmeta"
+    "fn"
+    "def"
+    "defmeta"
 ] @keyword.function
 
 ; The def-type of a definition, a meta and a reference: `package` in
 ; `def package x.y(v)`, `defmeta package x.y` and `package x.y`.
 (def_type
-  (identifier) @keyword.function)
+    (identifier) @keyword.function)
 
 (reference
-  def_type: (identifier) @keyword.function)
+    def_type: (identifier) @keyword.function)
 
 [
-  "if"
-  "else"
+    "if"
+    "else"
 ] @keyword.conditional
 
 [
-  "for"
-  "do"
+    "for"
+    "do"
 ] @keyword.repeat
 
 [
-  "return"
-  "break"
-  "continue"
+    "return"
+    "break"
+    "continue"
 ] @keyword.return
 
 [
-  "and"
-  "or"
-  "not"
-  "is"
-  "as"
-  "in"
+    "and"
+    "or"
+    "not"
+    "is"
+    "as"
+    "in"
 ] @keyword.operator
 
 [
-  "import"
-  "from"
+    "import"
+    "from"
 ] @keyword.import
 
 [
-  "let"
-  "mut"
-  "lazy"
-  "await"
+    "let"
+    "mut"
+    "lazy"
+    "await"
 ] @keyword.modifier
 
 [
-  "type"
-  "META"
+    "type"
+    "META"
 ] @keyword
 
 ; The effect markers `:`, `->>` and `->` of functions and function types.
@@ -103,84 +103,84 @@
 ; ---- Types ------------------------------------------------------------------
 
 (type_declaration
-  name: (identifier) @type.definition)
+    name: (identifier) @type.definition)
 
 ((type_identifier) @type.builtin
-  (#any-of? @type.builtin "Int" "Float" "Bool" "String" "List" "Future" "Present"))
+    (#any-of? @type.builtin "Int" "Float" "Bool" "String" "List" "Future" "Present"))
 
 ((type_identifier) @type
-  (#not-any-of? @type "Int" "Float" "Bool" "String" "List" "Future" "Present"))
+    (#not-any-of? @type "Int" "Float" "Bool" "String" "List" "Future" "Present"))
 
 ; `t.PackageDef`: the module, then the type.
 (qualified_type
-  (identifier) @module
-  .
-  (identifier))
+    (identifier) @module
+    .
+    (identifier))
 
 (qualified_type
-  (identifier) @type .)
+    (identifier) @type .)
 
 ; ---- Functions --------------------------------------------------------------
 
 (named_function
-  name: (identifier) @function)
+    name: (identifier) @function)
 
 ; `def dev.peios.hello`: the module, then the function.
 (public_function
-  name: (dotted_name
-    (identifier) @module
-    .
-    (identifier)))
+    name: (dotted_name
+        (identifier) @module
+        .
+        (identifier)))
 
 (public_function
-  name: (dotted_name
-    (identifier) @function .))
+    name: (dotted_name
+        (identifier) @function .))
 
 ; The prelude's functions (gcsl stdlib/prelude.gcsl).
 (call
-  function: (identifier) @function.builtin
-  (#any-of? @function.builtin
-    "len" "show" "int" "float" "half" "exec" "exec_live" "panic" "split" "join"
-    "starts_with" "ends_with" "trim" "strip_prefix" "strip_suffix" "lines"
-    "fields" "compare_versions" "sort_versions" "sh" "sh_live"))
+    function: (identifier) @function.builtin
+    (#any-of? @function.builtin
+        "len" "show" "int" "float" "half" "exec" "exec_live" "panic" "split" "join"
+        "starts_with" "ends_with" "trim" "strip_prefix" "strip_suffix" "lines"
+        "fields" "compare_versions" "sort_versions" "sh" "sh_live"))
 
 (call
-  function: (identifier) @function.call
-  (#not-any-of? @function.call
-    "len" "show" "int" "float" "half" "exec" "exec_live" "panic" "split" "join"
-    "starts_with" "ends_with" "trim" "strip_prefix" "strip_suffix" "lines"
-    "fields" "compare_versions" "sort_versions" "sh" "sh_live"))
+    function: (identifier) @function.call
+    (#not-any-of? @function.call
+        "len" "show" "int" "float" "half" "exec" "exec_live" "panic" "split" "join"
+        "starts_with" "ends_with" "trim" "strip_prefix" "strip_suffix" "lines"
+        "fields" "compare_versions" "sort_versions" "sh" "sh_live"))
 
 ; ---- Parameters -------------------------------------------------------------
 
 (parameter
-  name: (identifier) @variable.parameter)
+    name: (identifier) @variable.parameter)
 
 (parameter_type
-  name: (identifier) @variable.parameter)
+    name: (identifier) @variable.parameter)
 
 (named_argument
-  name: (identifier) @variable.parameter)
+    name: (identifier) @variable.parameter)
 
 ; ---- Modules: imports and definition paths ----------------------------------
 
 (import
-  path: (module_path
-    (identifier) @module))
+    path: (module_path
+        (identifier) @module))
 
 (import
-  source: (module_path
-    (identifier) @module))
+    source: (module_path
+        (identifier) @module))
 
 (import
-  alias: (identifier) @module)
+    alias: (identifier) @module)
 
 (import_member
-  path: (module_path
-    (identifier) @variable))
+    path: (module_path
+        (identifier) @variable))
 
 (import_member
-  alias: (identifier) @variable)
+    alias: (identifier) @variable)
 
 ; A definition path's segments are modules, but the last segment of a
 ; definition's path, the name it defines, which is a function, as a `def`'s
@@ -188,42 +188,42 @@
 ; the last segment of a meta's and a reference's path, which names that
 ; definition. Each segment matches one of these patterns only.
 (definition_path
-  (segment) @module
-  .
-  (segment))
+    (segment) @module
+    .
+    (segment))
 
 (definition_path
-  (segment
-    (identifier) @module)
-  .
-  (segment))
+    (segment
+        (identifier) @module)
+    .
+    (segment))
 
 (meta
-  path: (definition_path
-    (segment) @function .))
+    path: (definition_path
+        (segment) @function .))
 
 (meta
-  path: (definition_path
-    (segment
-      (identifier) @function) .))
+    path: (definition_path
+        (segment
+            (identifier) @function) .))
 
 (reference
-  path: (definition_path
-    (segment) @function .))
+    path: (definition_path
+        (segment) @function .))
 
 (reference
-  path: (definition_path
-    (segment
-      (identifier) @function) .))
+    path: (definition_path
+        (segment
+            (identifier) @function) .))
 
 (definition
-  path: (definition_path
-    (segment) @function .))
+    path: (definition_path
+        (segment) @function .))
 
 (definition
-  path: (definition_path
-    (segment
-      (identifier) @function) .))
+    path: (definition_path
+        (segment
+            (identifier) @function) .))
 
 ; ---- Variables and fields ---------------------------------------------------
 
@@ -231,232 +231,232 @@
 ; top level (`meta = {..}`); a field item in a body names a field. A path's
 ; later names are fields.
 (let
-  path: (path
-    name: (identifier) @variable))
+    path: (path
+        name: (identifier) @variable))
 
 (rebind
-  path: (path
-    name: (identifier) @variable))
+    path: (path
+        name: (identifier) @variable))
 
 (source_file
-  (field
-    path: (path
-      name: (identifier) @variable)))
+    (field
+        path: (path
+            name: (identifier) @variable)))
 
 (block
-  (field
-    path: (path
-      name: (identifier) @variable.member)))
+    (field
+        path: (path
+            name: (identifier) @variable.member)))
 
 (path
-  field: (identifier) @variable.member)
+    field: (identifier) @variable.member)
 
 (field_type
-  name: (identifier) @variable.member)
+    name: (identifier) @variable.member)
 
 ; An identifier where an expression stands, by the field that holds it...
 (_
-  left: (identifier) @variable)
+    left: (identifier) @variable)
 
 (_
-  right: (identifier) @variable)
+    right: (identifier) @variable)
 
 (_
-  operand: (identifier) @variable)
+    operand: (identifier) @variable)
 
 (_
-  body: (identifier) @variable)
+    body: (identifier) @variable)
 
 (_
-  record: (identifier) @variable)
+    record: (identifier) @variable)
 
 (_
-  list: (identifier) @variable)
+    list: (identifier) @variable)
 
 (_
-  index: (identifier) @variable)
+    index: (identifier) @variable)
 
 (_
-  value: (identifier) @variable)
+    value: (identifier) @variable)
 
 (_
-  default: (identifier) @variable)
+    default: (identifier) @variable)
 
 (_
-  condition: (identifier) @variable)
+    condition: (identifier) @variable)
 
 (_
-  iterable: (identifier) @variable)
+    iterable: (identifier) @variable)
 
 (_
-  guard: (identifier) @variable)
+    guard: (identifier) @variable)
 
 (_
-  expression: (identifier) @variable)
+    expression: (identifier) @variable)
 
 (_
-  variable: (identifier) @variable)
+    variable: (identifier) @variable)
 
 ; ...or by the node it stands in.
 (source_file
-  (identifier) @variable)
+    (identifier) @variable)
 
 (block
-  (identifier) @variable)
+    (identifier) @variable)
 
 (list
-  (identifier) @variable)
+    (identifier) @variable)
 
 (arguments
-  (identifier) @variable)
+    (identifier) @variable)
 
 (parenthesized_expression
-  (identifier) @variable)
+    (identifier) @variable)
 
 ; Field accesses. A field access that is called, or that is a reference's
 ; def-type, is captured both before and after the general pattern, so that
 ; it wins whether the first pattern or the last wins.
 (call
-  function: (field_access
-    field: (identifier) @function.call))
+    function: (field_access
+        field: (identifier) @function.call))
 
 (reference
-  def_type: (field_access
-    field: (identifier) @keyword.function))
+    def_type: (field_access
+        field: (identifier) @keyword.function))
 
 (field_access
-  field: (identifier) @variable.member)
+    field: (identifier) @variable.member)
 
 (call
-  function: (field_access
-    field: (identifier) @function.call))
+    function: (field_access
+        field: (identifier) @function.call))
 
 (reference
-  def_type: (field_access
-    field: (identifier) @keyword.function))
+    def_type: (field_access
+        field: (identifier) @keyword.function))
 
 ; ---- Operators and punctuation ----------------------------------------------
 
 (binary
-  operator: [
-    "+"
-    "-"
-    "*"
-    "/"
-    "//"
-    "%"
-    "=="
-    "!="
-    "==="
-    "!=="
-    "<"
-    "<="
-    ">"
-    ">="
-    ".."
-    "..="
-  ] @operator)
+    operator: [
+        "+"
+        "-"
+        "*"
+        "/"
+        "//"
+        "%"
+        "=="
+        "!="
+        "==="
+        "!=="
+        "<"
+        "<="
+        ">"
+        ">="
+        ".."
+        "..="
+    ] @operator)
 
 (unary
-  operator: "-" @operator)
+    operator: "-" @operator)
 
 [
-  "="
-  ":="
-  "..."
-  "|"
-  (wildcard)
+    "="
+    ":="
+    "..."
+    "|"
+    (wildcard)
 ] @operator
 
 (applied_type
-  [
-    "<"
-    ">"
-  ] @punctuation.bracket)
+    [
+        "<"
+        ">"
+    ] @punctuation.bracket)
 
 (block
-  [
-    "{"
-    "}"
-  ] @punctuation.bracket)
+    [
+        "{"
+        "}"
+    ] @punctuation.bracket)
 
 (record_type
-  [
-    "{"
-    "}"
-  ] @punctuation.bracket)
+    [
+        "{"
+        "}"
+    ] @punctuation.bracket)
 
 (list
-  [
-    "["
-    "]"
-  ] @punctuation.bracket)
+    [
+        "["
+        "]"
+    ] @punctuation.bracket)
 
 (index
-  [
-    "["
-    "]"
-  ] @punctuation.bracket)
+    [
+        "["
+        "]"
+    ] @punctuation.bracket)
 
 (index_segment
-  [
-    "["
-    "]"
-  ] @punctuation.bracket)
+    [
+        "["
+        "]"
+    ] @punctuation.bracket)
 
 (list_type
-  "[]" @punctuation.bracket)
+    "[]" @punctuation.bracket)
 
 (arguments
-  [
-    "("
-    ")"
-  ] @punctuation.bracket)
+    [
+        "("
+        ")"
+    ] @punctuation.bracket)
 
 (parameters
-  [
-    "("
-    ")"
-  ] @punctuation.bracket)
+    [
+        "("
+        ")"
+    ] @punctuation.bracket)
 
 (parameter_types
-  [
-    "("
-    ")"
-  ] @punctuation.bracket)
+    [
+        "("
+        ")"
+    ] @punctuation.bracket)
 
 (parenthesized_expression
-  [
-    "("
-    ")"
-  ] @punctuation.bracket)
+    [
+        "("
+        ")"
+    ] @punctuation.bracket)
 
 (parenthesized_type
-  [
-    "("
-    ")"
-  ] @punctuation.bracket)
+    [
+        "("
+        ")"
+    ] @punctuation.bracket)
 
 [
-  ","
-  ";"
-  "."
+    ","
+    ";"
+    "."
 ] @punctuation.delimiter
 
 (let
-  ":" @punctuation.delimiter)
+    ":" @punctuation.delimiter)
 
 (field
-  ":" @punctuation.delimiter)
+    ":" @punctuation.delimiter)
 
 (ascription
-  ":" @punctuation.delimiter)
+    ":" @punctuation.delimiter)
 
 (parameter
-  ":" @punctuation.delimiter)
+    ":" @punctuation.delimiter)
 
 (field_type
-  ":" @punctuation.delimiter)
+    ":" @punctuation.delimiter)
 
 (parameter_type
-  ":" @punctuation.delimiter)
+    ":" @punctuation.delimiter)

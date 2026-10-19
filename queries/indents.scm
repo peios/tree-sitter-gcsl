@@ -12,50 +12,50 @@
 ; parameter lists, and parentheses open a level. The blocks of an `if` are
 ; the exception: the `if` opens their level (see "if and else").
 [
-  (record_type)
-  (list)
-  (arguments)
-  (parameters)
-  (parameter_types)
-  (parenthesized_expression)
-  (parenthesized_type)
+    (record_type)
+    (list)
+    (arguments)
+    (parameters)
+    (parameter_types)
+    (parenthesized_expression)
+    (parenthesized_type)
 ] @indent.begin
 
 ((block) @indent.begin
-  (#not-has-parent? @indent.begin if))
+    (#not-has-parent? @indent.begin if))
 
 ; A binary expression continued on later lines, `"a"` newline `+ "b"`,
 ; indents them a level (a hanging indent). Only the outermost of a chain
 ; opens it, its operands starting on the line it does.
 ((binary) @indent.begin
-  (#not-has-parent? @indent.begin binary))
+    (#not-has-parent? @indent.begin binary))
 
 ; A line starting with the closing bracket goes back a level (a branch, as
 ; nvim-treesitter calls it), and a new line after a line ending with one is
 ; indented as the line the node started on (`@indent.end`).
 (block
-  "}" @indent.branch @indent.end)
+    "}" @indent.branch @indent.end)
 
 (record_type
-  "}" @indent.branch @indent.end)
+    "}" @indent.branch @indent.end)
 
 (list
-  "]" @indent.branch @indent.end)
+    "]" @indent.branch @indent.end)
 
 (arguments
-  ")" @indent.branch @indent.end)
+    ")" @indent.branch @indent.end)
 
 (parameters
-  ")" @indent.branch @indent.end)
+    ")" @indent.branch @indent.end)
 
 (parameter_types
-  ")" @indent.branch @indent.end)
+    ")" @indent.branch @indent.end)
 
 (parenthesized_expression
-  ")" @indent.branch @indent.end)
+    ")" @indent.branch @indent.end)
 
 (parenthesized_type
-  ")" @indent.branch @indent.end)
+    ")" @indent.branch @indent.end)
 
 ; ---- if and else ------------------------------------------------------------
 
@@ -79,10 +79,10 @@
 ; for the call and the `if` together. (An `if`'s parent is an `if` only when
 ; it follows an `else`.)
 ((if) @indent.begin
-  (#not-has-parent? @indent.begin if))
+    (#not-has-parent? @indent.begin if))
 
 (if
-  "else" @indent.branch)
+    "else" @indent.branch)
 
 ; ---- Text kept as it is -----------------------------------------------------
 
@@ -92,8 +92,8 @@
 ; `@indent.auto` keeps a line's indent; `@indent.ignore` would put it at
 ; the margin.
 [
-  (string)
-  (raw_string)
+    (string)
+    (raw_string)
 ] @indent.auto
 
 (comment) @indent.auto
