@@ -19,7 +19,7 @@ The native parser is `bazel-bin/gcsl.so`, the portable parser is
 See [building](docs/building.md), [packaging](docs/packaging.md), and
 [coding style](docs/coding-style.md) for repository maintenance. The
 [Learn contribution](docs/learn/2--developer-tools.shelf/gcsl.product/7--tree-sitter.topic/) explains
-editor setup, query behavior, and parser differences. Panorama merges it
+editor setup, query behavior, and parser differences. Peios Learn merges it
 into the GCSL documentation product.
 
 The generated C and node descriptions remain in `src/` for editors that
