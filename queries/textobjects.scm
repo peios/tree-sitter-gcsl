@@ -465,12 +465,14 @@
     [
         (field_type)
         (spread)
+        (rest_field)
     ] @parameter.inner)
 
 (record_type
     [
         (field_type)
         (spread)
+        (rest_field)
     ] @parameter.outer
     .
     "," @parameter.outer)
@@ -481,6 +483,7 @@
     [
         (field_type)
         (spread)
+        (rest_field)
     ] @parameter.outer
     .
     "}")
@@ -491,6 +494,7 @@
     [
         (field_type)
         (spread)
+        (rest_field)
     ] @parameter.outer
     .
     "}")

@@ -3454,6 +3454,10 @@
                       },
                       "named": true,
                       "value": "spread"
+                    },
+                    {
+                      "type": "SYMBOL",
+                      "name": "rest_field"
                     }
                   ]
                 },
@@ -3481,6 +3485,10 @@
                             },
                             "named": true,
                             "value": "spread"
+                          },
+                          {
+                            "type": "SYMBOL",
+                            "name": "rest_field"
                           }
                         ]
                       }
@@ -3509,6 +3517,27 @@
         {
           "type": "STRING",
           "value": "}"
+        }
+      ]
+    },
+    "rest_field": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "*"
+        },
+        {
+          "type": "STRING",
+          "value": ":"
+        },
+        {
+          "type": "FIELD",
+          "name": "type",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_type"
+          }
         }
       ]
     },

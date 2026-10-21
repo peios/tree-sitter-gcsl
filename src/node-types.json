@@ -4462,6 +4462,10 @@
           "named": true
         },
         {
+          "type": "rest_field",
+          "named": true
+        },
+        {
           "type": "spread",
           "named": true
         }
@@ -4492,6 +4496,50 @@
         "types": [
           {
             "type": "definition_path",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "rest_field",
+    "named": true,
+    "fields": {
+      "type": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "applied_type",
+            "named": true
+          },
+          {
+            "type": "function_type",
+            "named": true
+          },
+          {
+            "type": "list_type",
+            "named": true
+          },
+          {
+            "type": "parenthesized_type",
+            "named": true
+          },
+          {
+            "type": "qualified_type",
+            "named": true
+          },
+          {
+            "type": "record_type",
+            "named": true
+          },
+          {
+            "type": "type_identifier",
+            "named": true
+          },
+          {
+            "type": "union_type",
             "named": true
           }
         ]

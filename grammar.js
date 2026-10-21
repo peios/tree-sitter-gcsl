@@ -616,10 +616,17 @@ module.exports = grammar({
                 ),
             ),
 
-        // `{` entries `}`, each `NAME: TYPE`, `NAME: TYPE = DEFAULT` or a spread
-        // `...TYPE`.
+        // `{` entries `}`, each `NAME: TYPE`, `NAME: TYPE = DEFAULT`, a spread
+        // `...TYPE`, or a rest-field `*: TYPE`, the type of every field the
+        // record type does not name.
         record_type: ($) =>
-            seq("{", commaSep(choice($.field_type, alias($.spread_type, $.spread))), "}"),
+            seq(
+                "{",
+                commaSep(choice($.field_type, alias($.spread_type, $.spread), $.rest_field)),
+                "}",
+            ),
+
+        rest_field: ($) => seq("*", ":", field("type", $._type)),
 
         field_type: ($) =>
             seq(
