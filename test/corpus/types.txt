@@ -96,6 +96,63 @@ type F = {
         (type_identifier)))))
 
 ================================================================================
+Record types: rest-fields
+================================================================================
+
+type Files = {*: String}
+type File = { to: String, from: String, *: Int }
+type T = {...M, *: {*: Int},
+  *
+  :
+  Bool,
+}
+let m: {*: String} = { "bin/*" = "bin/*" }
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (type_declaration
+    (identifier)
+    (record_type
+      (rest_field
+        (type_identifier))))
+  (type_declaration
+    (identifier)
+    (record_type
+      (field_type
+        (identifier)
+        (type_identifier))
+      (field_type
+        (identifier)
+        (type_identifier))
+      (rest_field
+        (type_identifier))))
+  (type_declaration
+    (identifier)
+    (record_type
+      (spread
+        (type_identifier))
+      (rest_field
+        (record_type
+          (rest_field
+            (type_identifier))))
+      (rest_field
+        (type_identifier))))
+  (let
+    (path
+      (identifier))
+    (record_type
+      (rest_field
+        (type_identifier)))
+    (block
+      (field
+        (path
+          (string
+            (string_content)))
+        (string
+          (string_content))))))
+
+================================================================================
 Function types, markers and metas
 ================================================================================
 

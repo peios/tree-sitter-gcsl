@@ -458,5 +458,11 @@
 (field_type
     ":" @punctuation.delimiter)
 
+; A rest-field's `*` stands for every field its record type does not name,
+; as an import's wildcard stands for every member.
+(rest_field
+    "*" @operator
+    ":" @punctuation.delimiter)
+
 (parameter_type
     ":" @punctuation.delimiter)

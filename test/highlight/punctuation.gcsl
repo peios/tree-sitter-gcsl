@@ -25,6 +25,10 @@ w = [...xs, 0..2]
 #              ^ punctuation.bracket
 import * from p
 #      ^ operator
+type Files = {to: String, *: String}
+#               ^ punctuation.delimiter
+#                         ^ operator
+#                          ^ punctuation.delimiter
 f(a.b)
 #^ punctuation.bracket
 #  ^ punctuation.delimiter
