@@ -5,19 +5,18 @@ highlighting, indentation, folding, and text-object queries. The GCSL
 compiler remains the language authority; this parser is not a validator or
 evaluator.
 
-Build and test on x86_64 Linux:
+Build and test on x86-64 Linux with pekit:
 
 ```sh
-./bazel test //...
-./bazel build //:gcsl.so //:wasm //:packages
+pekit test
+pekit build parser wasm
 ```
 
-The native parser is `bazel-bin/gcsl.so`, the portable parser is
-`bazel-bin/tree-sitter-gcsl.wasm`, and the unsigned development PPK store is
-`bazel-bin/packages.store`.
+The native parser is `gcsl.so` and the portable parser is `gcsl.wasm`; pekit
+prints where each is, under `pekit-out/`.
 
-See [building](docs/building.md), [packaging](docs/packaging.md), and
-[coding style](docs/coding-style.md) for repository maintenance. The
+See [building](docs/building.md) and [coding style](docs/coding-style.md)
+for repository maintenance. The
 [Learn contribution](docs/learn/2--developer-tools.shelf/gcsl.product/7--tree-sitter.topic/) explains
 editor setup, query behavior, and parser differences. Peios Learn merges it
 into the GCSL documentation product.

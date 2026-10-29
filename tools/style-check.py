@@ -24,11 +24,7 @@ def run(*args: str) -> None:
 
 
 def main() -> None:
-    python = [
-        str(p.relative_to(ROOT))
-        for folder in ["tools", "packages"]
-        for p in (ROOT / folder).glob("*.py")
-    ]
+    python = [str(p.relative_to(ROOT)) for p in (ROOT / "tools").glob("*.py")]
     ruff = tool("ruff", "ruff 0.17.0")
     run(ruff, "check", "--no-cache", "--config", "tools/ruff.toml", *python)
     run(ruff, "format", "--check", "--no-cache", "--config", "tools/ruff.toml", *python)
@@ -40,39 +36,16 @@ def main() -> None:
         "--style=file:tools/clang-format.yaml",
         *c,
     )
-    starlark = ["BUILD.bazel", "MODULE.bazel"] + [
-        str(p.relative_to(ROOT))
-        for folder in ["build", "packages", "vendor/ppk"]
-        for p in (ROOT / folder).iterdir()
-        if p.suffix == ".bzl" or p.name.endswith("BUILD.bazel")
-    ]
-    run(
-        tool("buildifier", "buildifier version: 10.1.0"),
-        "-mode=check",
-        "-lint=warn",
-        "-warnings=load,unused-variable,function-docstring",
-        *starlark,
-    )
-    shell = ["bazel", "tools/check", "tools/check-docs", "tools/offline-build"]
+    shell = ["tools/check", "tools/check-docs", "tools/generate"]
     run(tool("shellcheck", "version: 0.11.0"), *shell)
     run(tool("shfmt", "v3.14.1"), "-d", "-i", "4", *shell)
     data = ["grammar.js", "tree-sitter.json"] + [
         str(p.relative_to(ROOT))
-        for folder in ["packages", ".github", "tools"]
+        for folder in [".github", "tools"]
         for p in (ROOT / folder).rglob("*")
         if p.suffix in {".json", ".yml"}
     ]
     run(tool("prettier", "3.9.10"), "--config", "tools/prettier.json", "--check", *data)
-    run(
-        "rustup",
-        "run",
-        "1.98.1",
-        "rustfmt",
-        "--check",
-        "--config-path",
-        "tools/rustfmt.toml",
-        "packages/check_blobs.rs",
-    )
 
 
 if __name__ == "__main__":

@@ -1,0 +1,10 @@
+#!/bin/sh
+# The contributor check: owned source style, then pekit's tests, which build
+# the native and Wasm parsers, check the committed generated files and run
+# the corpus, highlight, runtime and scanner tests.
+set -eu
+
+repo=$(CDPATH="" cd -- "$(dirname -- "$0")/.." && pwd)
+cd "$repo"
+python3 tools/style-check.py
+pekit test

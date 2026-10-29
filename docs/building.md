@@ -1,70 +1,98 @@
 # Building Tree-sitter GCSL
 
-The supported development host is x86_64 Linux with a C compiler, binutils,
-Python 3.11 or later, and the shell tools used by the Bazel launcher.
-Bazel 8.4.2, Tree-sitter 0.27.1, WASI SDK 34.0, Binaryen 132, and the Rust
-toolchain used only by the package writer are pinned in the repository.
+Use pekit to build the native and Wasm parsers and to run their tests. The
+supported development host is x86-64 Linux.
 
-Run the declared build and tests:
+## Before you start
+
+You need pekit and Git. Everything else is pinned and fetched by pekit on
+the first build: the Bootlin C toolchain, Python 3.14, busybox and GNU
+make, Tree-sitter 0.27.1's CLI and runtime source, WASI SDK 34.0, Binaryen
+132, and ncurses 6.5, whose terminal library WASI SDK's compiler needs.
+The first build needs network access; later builds find what they need in
+pekit's store, and every step runs without network access in a sandbox
+that holds only its declared inputs.
+
+The build files use the gcslib libraries named in `workspace.gcsl` and the
+build files. `pekit lock` pins their commits in `pekit.lock`.
+
+## Build
 
 ```sh
-./bazel test //...
-./bazel build //:gcsl.so //:wasm //:packages
+pekit build parser wasm
 ```
 
+| Target | Output |
+|---|---|
+| `parser` | `gcsl.so`, the native parser, a Tree-sitter plugin |
+| `wasm` | `gcsl.wasm`, the portable parser |
+| `generated` | The parser files the pinned CLI generates from `grammar.js` |
+
+Each output is under `pekit-out/<target>/`, and pekit prints its path
+indented under the target's name. The native parser exports
+`tree_sitter_gcsl` alone and is linked with full RELRO, immediate binding,
+and a non-executable stack.
+
+## Test
+
+```sh
+pekit test
+```
+
+| Test | Check |
+|---|---|
+| `generated` | The committed generated files match what the CLI generates |
+| `corpus` | The corpus and highlight tests, against the native parser |
+| `wasm_corpus` | The corpus and highlight tests, against the Wasm parser |
+| `runtime` | Incremental edits and the queries, with Tree-sitter's runtime |
+| `scanner` | The external scanner's state, compiled with warnings as errors |
+
+The corpus tests load the built parser from a private directory with
+compiling turned off, so the parser tested is the one built. A test whose
+inputs did not change is found in the store and not run again.
+
 The grammar uses ABI 15. Generated files remain committed for editor
-consumers. The `generated-test` target regenerates them in a disposable
-directory and compares every generated file. Native and Wasm corpus tests
-load the declared artifacts through a private loader directory with
-automatic compilation disabled. The C tests cover scanner state,
-incremental edits, and query captures.
+consumers.
 
 ## Regeneration
 
 Regenerate with the pinned CLI and its embedded JavaScript runtime:
 
 ```sh
-./bazel run //:generate
+tools/generate
 ```
 
-The command generates into a temporary directory before replacing changed
-committed outputs. Do not format `src/parser.c`, the generated JSON, or
-`src/tree_sitter/` by hand. A pure formatting change to `grammar.js` should
-leave those files byte-identical.
+The files are generated in a pekit sandbox, and each one that differs
+replaces its committed copy in `src/`. Do not format `src/parser.c`, the
+generated JSON, or `src/tree_sitter/` by hand. A pure formatting change to
+`grammar.js` should leave those files byte-identical.
 
 ## Style and documentation
 
-Prepare style tools outside the checkout, then run the checks:
+Install the pinned PSC tools into a directory outside the repository, then
+run the shared entry point:
 
 ```sh
-python3 tools/prepare-style-tools.py /path/to/style-tools
-PEIOS_STYLE_BIN=/path/to/style-tools/bin tools/check
+python3 tools/prepare-style-tools.py "$HOME/.cache/grammar-style"
+export PEIOS_STYLE_BIN="$HOME/.cache/grammar-style/bin"
+tools/check
 TRAIL=/path/to/trail tools/check-docs
 ```
 
-Use actual absolute paths for the style-tool directory and Trail executable.
-The maintained code uses PSC. Generated and pinned third-party code keeps
-its original formatting, as described in `coding-style.md`.
+`tools/check` checks owned source formatting and lint with Ruff,
+clang-format, ShellCheck, shfmt, and Prettier, then runs `pekit test`.
+GitHub's workflow runs the style checks alone; builds and tests run with
+pekit on the build server. The maintained code uses PSC. Generated and
+pinned third-party code keeps its original formatting, as described in
+`coding-style.md`.
 
-## Native Peios builds
+`test/workspace.gcsl` makes `test/` a workspace of its own, so that the
+repository's workspace leaves out the highlight fixtures in
+`test/highlight/`, which are GCSL examples, not build files.
 
-Acquire inputs from the final source tree while the network is available:
+## Not built with pekit yet
 
-```sh
-tools/offline-build acquire /path/to/frozen-inputs
-```
-
-Run the native build in a caller-provided isolated Peios userspace with its
-C toolchain, Python, binutils, and hardened Rust 1.98.1 or later. Set
-`PEIOS_RUSTC` to that environment's compiler. Keep the source lock identical
-to the one recorded during acquisition:
-
-```sh
-tools/offline-build test /path/to/frozen-inputs /path/to/private-build
-```
-
-The native configuration does not provision or modify the host operating
-system. It disables dependency downloads and uses a private vendor view.
-Its packages require native hardening properties. A successful isolated
-userspace test is distinct from testing an installed editor in a Peios
-guest.
+Packages, debug information, and builds with the native Peios toolchain
+are not yet built with pekit. The package definitions and the native build
+settings from the Bazel build are kept outside this repository until they
+are.

@@ -17,11 +17,14 @@ You need the following:
 - The four files in the grammar repository's `queries/` directory.
 
 The example uses a Linux development build. From the grammar repository,
-build the native parser:
+build the native parser with pekit:
 
 ```sh
-./bazel build //:gcsl.so
+parser=$(pekit build parser | sed -n 's/^  //p')
 ```
+
+The command keeps the built parser's path, which pekit prints indented
+under the target name, in `parser`.
 
 ## Install the parser and queries
 
@@ -35,7 +38,7 @@ build the native parser:
 2. Copy the parser and queries into those directories:
 
    ```sh
-   cp bazel-bin/gcsl.so "$config/parser/gcsl.so"
+   cp "$parser" "$config/parser/gcsl.so"
    cp queries/*.scm "$config/queries/gcsl/"
    ```
 

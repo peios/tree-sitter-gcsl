@@ -14,11 +14,14 @@ You need a clackatoo version that supports Wasm language packs and the
 grammar repository. To use the language server too, install `gcsl` on the
 editor's command search path.
 
-Build the portable parser from the grammar repository:
+Build the portable parser from the grammar repository with pekit:
 
 ```sh
-./bazel build //:wasm
+wasm=$(pekit build wasm | sed -n 's/^  //p')
 ```
+
+The command keeps the built parser's path, which pekit prints indented
+under the target name, in `wasm`.
 
 ## Create the language pack
 
@@ -32,7 +35,7 @@ Build the portable parser from the grammar repository:
 2. Copy the parser and supported queries:
 
    ```sh
-   cp bazel-bin/tree-sitter-gcsl.wasm "$pack/grammar.wasm"
+   cp "$wasm" "$pack/grammar.wasm"
    cp queries/highlights.scm queries/indents.scm queries/textobjects.scm "$pack/"
    ```
 

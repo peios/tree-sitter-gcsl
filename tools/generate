@@ -1,0 +1,20 @@
+#!/bin/sh
+# Regenerates the committed parser files in src/ from grammar.js with the
+# pinned Tree-sitter CLI: pekit generates them in a sandbox, and each one
+# that differs replaces its committed copy.
+set -eu
+
+repo=$(CDPATH="" cd -- "$(dirname -- "$0")/.." && pwd)
+cd "$repo"
+made=$(pekit build generated | awk -v target="built /generated" '
+    found { sub(/^  /, ""); print; exit }
+    $0 == target || index($0, target ":") == 1 { found = 1 }
+')
+updated=0
+for name in parser.c grammar.json node-types.json tree_sitter/alloc.h tree_sitter/array.h tree_sitter/parser.h; do
+    if ! cmp -s "$made/$name" "src/$name"; then
+        cat "$made/$name" >"src/$name"
+        updated=$((updated + 1))
+    fi
+done
+echo "Updated $updated generated files"
