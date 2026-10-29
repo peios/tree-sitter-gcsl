@@ -1,0 +1,159 @@
+# tree-sitter-gcsl's tests, as Bazel ran them:
+#
+# - `generated`: the committed parser files are what the pinned CLI
+#   generates from `grammar.js`;
+# - `corpus` and `wasm_corpus`: Tree-sitter's corpus and highlight tests,
+#   run by the pinned CLI against the native parser and the Wasm parser,
+#   each loaded from a private directory with compiling turned off, so
+#   that the parser tested is the one built;
+# - `runtime`: incremental edits and the queries, against Tree-sitter's
+#   runtime library;
+# - `scanner`: the external scanner's state, compiled with every warning
+#   an error.
+#
+# A test's own code runs in a hermetic step of its own, so what it builds
+# or fetches, and its toolchains, are in its parameters' defaults.
+import path
+import toolchain
+import Toolchain from toolchain
+import "github.com/gcslib/python"
+
+def test generated(
+    cli: File = cli(),
+    script: File = file("tools/grammar-build.py"),
+    sources: List<{at: String, place: Dir | File}> = grammar(),
+    py: python.PythonToolchain = toolchain.get(Toolchain::Python),
+) {
+    let checked = grammar_tool(
+        ["check", "/opt/tree-sitter"],
+        [{at = "/opt/tree-sitter"; place = cli}],
+        script = script,
+        sources = sources,
+        py = py,
+    )
+}
+
+def test corpus(
+    parser: File = build parser(),
+    cli: File = cli(),
+    script: File = file("tools/grammar-tests.py"),
+    sources: List<{at: String, place: Dir | File}> = grammar(),
+    py: python.PythonToolchain = toolchain.get(Toolchain::Python),
+) {
+    = corpus_run("native", parser, "gcsl.so", cli, script, sources, py)
+}
+
+def test wasm_corpus(
+    parser: File = build wasm(),
+    cli: File = cli(),
+    script: File = file("tools/grammar-tests.py"),
+    sources: List<{at: String, place: Dir | File}> = grammar(),
+    py: python.PythonToolchain = toolchain.get(Toolchain::Python),
+) {
+    = corpus_run("wasm", parser, "gcsl.wasm", cli, script, sources, py)
+}
+
+def test runtime(
+    program: File = runtime_program(),
+    queries: Dir = dir("queries"),
+    c: toolchain.CToolchain = toolchain.get(Toolchain::C),
+) {
+    = ran(program, [{at = "/work/queries"; place = queries}], c)
+}
+
+def test scanner(program: File = scanner_program(), c: toolchain.CToolchain = toolchain.get(Toolchain::C)) {
+    = ran(program, [], c)
+}
+
+# `tools/grammar-tests.py`, `script`, run in `mode` with the CLI `cli`
+# against the parser `parser`, placed as `name`.
+fn corpus_run(
+    mode: String,
+    parser: File,
+    name: String,
+    cli: File,
+    script: File,
+    sources: List<{at: String, place: Dir | File}>,
+    py: python.PythonToolchain,
+) -> {} {
+    let box = sandbox(
+        [
+            {at = "/opt/python"; place = py.root},
+            {at = "/opt/tree-sitter"; place = cli},
+            {at = "/work/tools/grammar-tests.py"; place = script},
+            {at = "/work/{name}"; place = parser},
+            ...sources,
+        ],
+        py.runtime,
+    )
+    let ran = box.exec("/opt/python/bin/python3", "/work/tools/grammar-tests.py", mode, "/opt/tree-sitter", "/work/{name}")
+}
+
+# The test program `program` run in `/work` on the sysroot of `c`, given
+# `placed` there.
+fn ran(program: File, placed: List<{at: String, place: Dir | File}>, c: toolchain.CToolchain) -> {} {
+    let box = sandbox([{at = "/work/test"; place = program}, ...placed], c.runtime)
+    let ran = box.exec("/work/test")
+}
+
+# `test/runtime.c` linked with the grammar and Tree-sitter's runtime
+# library.
+def runtime_program(runtime: Dir = runtime_source()) -> File {
+    let test: List<{at: String, place: Dir | File}> = [
+        {at = "/work/test/runtime.c"; place = file("test/runtime.c")},
+        {at = "/work/tree-sitter"; place = runtime},
+    ]
+    let objects = [
+        ...grammar_objects(),
+        compiled(
+            [{at = "/work/tree-sitter"; place = runtime}],
+            [
+                "-c",
+                "-std=c11",
+                "-D_DEFAULT_SOURCE",
+                "-Itree-sitter/lib/include",
+                "-Itree-sitter/lib/src",
+                "tree-sitter/lib/src/lib.c",
+            ],
+            "lib.o",
+        ),
+        compiled(
+            test,
+            ["-c", "-Itree-sitter/lib/include", "test/runtime.c"],
+            "runtime.o",
+        ),
+    ]
+    = linked(objects, "runtime")
+}
+
+# `test/scanner.c`, compiled with every warning an error, linked with the
+# grammar.
+def scanner_program() -> File {
+    let test: List<{at: String, place: Dir | File}> = [
+        {at = "/work/test/scanner.c"; place = file("test/scanner.c")},
+        {at = "/work/src"; place = dir("src")},
+    ]
+    let objects = [
+        ...grammar_objects(),
+        compiled(
+            test,
+            ["-c", "-Wall", "-Wextra", "-Werror", "-Isrc", "test/scanner.c"],
+            "scanner-test.o",
+        ),
+    ]
+    = linked(objects, "scanner")
+}
+
+# The grammar's objects, compiled as the plugin compiles them.
+def grammar_objects() -> List<File> {
+    = for each in ["parser", "scanner"] {
+        = compiled([{at = "/work/src"; place = dir("src")}], ["-c", ...grammar_flags(), "src/{each}.c"], "{each}.o")
+    }
+}
+
+# The program `name` of `objects`.
+def linked(objects: List<File>, name: String) -> File {
+    let placed: List<{at: String, place: Dir | File}> = for each in objects { = {at = "/work/objects/{path.basename(each.path)}"; place = each} }
+    = compiled(placed, [...(for each in placed { = each.at })], name)
+}
+

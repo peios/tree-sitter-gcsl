@@ -1,0 +1,13 @@
+# The tree-sitter-gcsl workspace: pekit compiles the native parser and the
+# C tests with the gcc library's Bootlin C toolchain, runs the grammar's
+# scripts with the python library's pinned Python, and builds ncurses'
+# libtinfo, which WASI SDK's compiler needs, with the buildenv library's
+# busybox and make.
+import Toolchain::* from "github.com/gcslib/buildenv"
+import Toolchain::* from "github.com/gcslib/gcc"
+import Toolchain::* from "github.com/gcslib/python"
+import Toolchain from toolchain
+
+pekitconf = {
+    toolchains = [Toolchain::C gcc_x86_64, Toolchain::Python python_3_14, Toolchain::BuildEnv busybox_x86_64]
+}

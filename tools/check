@@ -1,6 +1,10 @@
 #!/bin/sh
-# Check maintained code and all declared parser/package targets.
+# The contributor check: owned source style, then pekit's tests, which build
+# the native and Wasm parsers, check the committed generated files and run
+# the corpus, highlight, runtime and scanner tests.
 set -eu
-cd "$(dirname "$0")/.."
+
+repo=$(CDPATH="" cd -- "$(dirname -- "$0")/.." && pwd)
+cd "$repo"
 python3 tools/style-check.py
-./bazel test --lockfile_mode=error //...
+pekit test

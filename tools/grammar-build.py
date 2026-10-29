@@ -1,4 +1,13 @@
-"""Generate, check, or compile parsers through a temporary working tree."""
+"""Generate, check, or compile parsers through a temporary working tree.
+
+Each operation reads the grammar from the working directory:
+
+- `generate CLI OUT` writes the generated parser files to the directory OUT,
+  laid out as `src/` holds them;
+- `check CLI` fails if a committed generated file differs from what the CLI
+  generates;
+- `wasm CLI CLANG WASM_OPT OUT` compiles the Wasm parser to the file OUT.
+"""
 
 import os
 import shutil
@@ -20,9 +29,7 @@ GENERATED = [
 def main() -> None:
     operation = sys.argv[1]
     cli = str(Path(sys.argv[2]).resolve())
-    source = (
-        Path(os.environ["BUILD_WORKSPACE_DIRECTORY"]) if operation == "generate" else Path.cwd()
-    )
+    source = Path.cwd()
     with tempfile.TemporaryDirectory(prefix="gcsl-grammar-") as temporary:
         work = Path(temporary)
         shutil.copy2(source / "grammar.js", work)
@@ -35,16 +42,18 @@ def main() -> None:
                 env=env,
                 check=True,
             )
+            if operation == "generate":
+                output = Path(sys.argv[3])
+                for name in GENERATED:
+                    (output / name).parent.mkdir(parents=True, exist_ok=True)
+                    shutil.copyfile(work / "src" / name, output / name)
+                return
             changed = [
                 name
                 for name in GENERATED
                 if (source / "src" / name).read_bytes() != (work / "src" / name).read_bytes()
             ]
-            if operation == "generate":
-                for name in changed:
-                    shutil.copyfile(work / "src" / name, source / "src" / name)
-                print("Updated " + str(len(changed)) + " generated files")
-            elif changed:
+            if changed:
                 raise SystemExit("Regenerate committed parser files: " + ", ".join(changed))
         elif operation == "wasm":
             shutil.copytree(source / "src", work / "src")
