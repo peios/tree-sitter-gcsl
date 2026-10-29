@@ -1,6 +1,0 @@
-#!/bin/sh
-# Check maintained code and all declared parser/package targets.
-set -eu
-cd "$(dirname "$0")/.."
-python3 tools/style-check.py
-./bazel test --lockfile_mode=error //...
