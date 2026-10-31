@@ -1,4 +1,0 @@
-# The grammar's tests, which no build file is among: this file makes `test/`
-# a workspace of its own, so that the repository's workspace leaves out the
-# GCSL of `highlight/`, Tree-sitter's highlight fixtures, which are no build
-# files and need not check.

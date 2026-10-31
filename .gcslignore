@@ -1,0 +1,3 @@
+# Tree-sitter's highlight fixtures, which are no build files and need not
+# check.
+test/highlight

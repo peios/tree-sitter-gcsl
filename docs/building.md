@@ -86,9 +86,8 @@ pekit on the build server. The maintained code uses PSC. Generated and
 pinned third-party code keeps its original formatting, as described in
 `coding-style.md`.
 
-`test/workspace.gcsl` makes `test/` a workspace of its own, so that the
-repository's workspace leaves out the highlight fixtures in
-`test/highlight/`, which are GCSL examples, not build files.
+`.gcslignore` leaves `test/highlight/` out of the workspace, because those
+files are GCSL examples, not build files.
 
 ## Not built with pekit yet
 
